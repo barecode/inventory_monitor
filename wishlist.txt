@@ -1,0 +1,18 @@
+# Format:
+# EXACT name of item of interest. The SeneGence website
+# has the full name inbetween the HTML <font> tags so
+# we search for >EXACT_NAME<
+# Use of regex may work (experimental)
+Strawberry Shortcake LipSense
+Sheer Berry LipSense
+Gold Glitter Gloss
+Pink Glitter Gloss
+Silver Glitter Gloss
+Amethyst Cr.me to Powder ShadowSense
+Pink Opal Shimmer Creme to Powder ShadowSense
+Silver Shimmer Creme to Powder ShadowSense
+Silver Violet Cr.me to Powder ShadowSense
+Snow Creme to Powder ShadowSense
+Toasted Rose BlushSense
+# Control value
+Glossy Gloss
