@@ -1,2 +1,5 @@
 # Never commit the secure credentials
 secure.sh
+
+# Ignore the generated cookie jar
+.login-cookies
