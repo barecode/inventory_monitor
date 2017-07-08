@@ -35,11 +35,12 @@ fi
 
 
 echo "Logging in as distributor $SENEGENCE_DIST_ID"
-rm ./.login-cookies
+rm -f ./.login-cookies
 LOGIN_RESPONSE=`curl -s -H "Content-Type:application/json; charset=UTF-8" -d "{Dist_ID:'$SENEGENCE_DIST_ID',Dist_Pass:'$SENEGENCE_DIST_PASS'}" --cookie-jar ./.login-cookies https://www.senegence.com/senegence/default.aspx/DistributorLogin`
 
 if echo $LOGIN_RESPONSE | grep "isDistributorPasswordCorrect===1"; then
   echo "Login successful!"
 else
   echo "Unable to login - verify distributor ID and password"
+  exit 1
 fi
