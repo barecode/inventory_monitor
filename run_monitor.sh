@@ -8,6 +8,9 @@
 # This script is expected to be called from crontab
 #
 
+# Switch to the script directory before execution
+cd `dirname $0`
+
 echo "Monitor job requested at `date "+%F @ %R"`"
 
 if ./checkInventory.sh; then
@@ -15,7 +18,13 @@ if ./checkInventory.sh; then
 else
   echo "Inventory check not successful, assuming expired login. Re-trying..."
   if ./login.sh; then
-    ./checkInventory.sh
+    if ./checkInventory.sh; then
+      echo "Job successfully ran";
+    else
+      echo "Second execution of ./checkInventory.sh failed"
+    fi
+  else
+    echo "Unable to login successfully"
   fi
 fi
 

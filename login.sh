@@ -9,6 +9,9 @@
 MISSING_SECURE_SH=
 MISSING_REQUIRED_ENVIRONMENT_VARIABLES=
 
+# Switch to the script directory before execution
+cd `dirname $0`
+
 if [[ -r ./secure.sh ]]; then
   MISSING_SECURE_SH=1
   source ./secure.sh
