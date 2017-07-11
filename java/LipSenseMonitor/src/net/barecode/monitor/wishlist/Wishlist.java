@@ -26,10 +26,10 @@ public class Wishlist {
 		this.list = new ArrayList<WishlistItem>();
 	}
 
-	public WishlistItem getItem(String name) {
+	public WishlistItem getItem(int itemNumber) {
 		WishlistItem foundItem = null;
 		for (WishlistItem item : list) {
-			if (item.name.equals(name)) {
+			if (item.itemNumber == itemNumber) {
 				foundItem = item;
 				break;
 			}
@@ -37,8 +37,8 @@ public class Wishlist {
 		return foundItem;
 	}
 
-	public WishlistItem addItem(String name) {
-		WishlistItem item = new WishlistItem(name);
+	public WishlistItem addItem(int itemNumber) {
+		WishlistItem item = new WishlistItem(itemNumber);
 		list.add(item);
 		return item;
 	}

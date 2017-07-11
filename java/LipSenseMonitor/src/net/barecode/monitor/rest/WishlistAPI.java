@@ -22,8 +22,8 @@ public class WishlistAPI {
 	public WishlistAPI() {
 		// Populate fake wishlist
 		Wishlist wl = new Wishlist("12345", "abc@123.com");
-		wl.list.add(new WishlistItem("Plum LipSense"));
-		wl.list.add(new WishlistItem("Glossy Gloss"));
+		wl.list.add(new WishlistItem(1090));
+		wl.list.add(new WishlistItem(1510));
 		wishlists.put(wl.distributorID, wl);
 	}
 
@@ -44,14 +44,14 @@ public class WishlistAPI {
 	@Path("wishlists/{distributorID}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WishlistItem addWishlistItem(@PathParam("name") String distributorID, String inputJson) {
-		return wishlists.get(distributorID).addItem(inputJson);
+	public WishlistItem addWishlistItem(@PathParam("name") String distributorID, int itemNumber) {
+		return wishlists.get(distributorID).addItem(itemNumber);
 	}
 
 	@GET
-	@Path("wishlists/{distributorID}/{name}")
+	@Path("wishlists/{distributorID}/{itemNumber}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WishlistItem getItem(@PathParam("name") String distributorID, @PathParam("name") String name) {
-		return wishlists.get(distributorID).getItem(name);
+	public WishlistItem getItem(@PathParam("name") String distributorID, @PathParam("itemNumber") int itemNumber) {
+		return wishlists.get(distributorID).getItem(itemNumber);
 	}
 }
