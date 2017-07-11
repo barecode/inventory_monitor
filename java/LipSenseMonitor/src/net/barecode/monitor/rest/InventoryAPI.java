@@ -39,4 +39,5 @@ public class InventoryAPI {
 	public Inventory getInventory() {
 		return inventory;
 	}
+
 }

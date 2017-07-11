@@ -1,5 +1,6 @@
 package net.barecode.monitor.rest;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,24 +35,32 @@ public class WishlistAPI {
 	}
 
 	@GET
-	@Path("wishlists/{distributorID}")
+	@Path("distributors")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Wishlist getWishlist(@PathParam("name") String distributorID) {
+	public Collection<String> getDistributors() {
+		return wishlists.keySet();
+	}
+
+	@GET
+	@Path("{distributorID}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Wishlist getWishlist(@PathParam("distributorID") String distributorID) {
 		return wishlists.get(distributorID);
 	}
 
 	@POST
-	@Path("wishlists/{distributorID}")
+	@Path("{distributorID}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WishlistItem addWishlistItem(@PathParam("name") String distributorID, int itemNumber) {
+	public WishlistItem addWishlistItem(@PathParam("distributorID") String distributorID, int itemNumber) {
 		return wishlists.get(distributorID).addItem(itemNumber);
 	}
 
 	@GET
-	@Path("wishlists/{distributorID}/{itemNumber}")
+	@Path("{distributorID}/{itemNumber}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WishlistItem getItem(@PathParam("name") String distributorID, @PathParam("itemNumber") int itemNumber) {
+	public WishlistItem getItem(@PathParam("distributorID") String distributorID,
+			@PathParam("itemNumber") int itemNumber) {
 		return wishlists.get(distributorID).getItem(itemNumber);
 	}
 }
