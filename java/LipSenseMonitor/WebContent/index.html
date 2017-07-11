@@ -52,10 +52,10 @@
 					for(var i = 0; i < list.length; i++) {
 						var item = list[i];
 						console.log(item);
-						var invRow = document.getElementById('inv-'+item.itemNumber);
-						console.log(invRow);
-						invRow.innerHTML += (item.isWatched ? ' <b>watched</b> ' : ' <i>not watched</i> ');
-						invRow.innerHTML += (item.isNotified ? ' <b>notified</b> ' : ' <i>not notified</i> ');
+						var watched = document.getElementById('watched-'+item.itemNumber);
+						var notified = document.getElementById('notified-'+item.itemNumber);
+						watched.innerHTML += (item.isWatched ? ' <b>watched</b> ' : ' <i>not watched</i> ');
+						notified.innerHTML += (item.isNotified ? ' <b>notified</b> ' : '');
 					}
 				} else {
 					// There was a problem with the request.
@@ -84,29 +84,35 @@
 					console.log(inv);
 					updatedTime.innerHTML = inv.epochAtLastUpdate;
 					
+					var newHTML = '';
 					var categories = inv.categories;
 					for (var i = 0; i < categories.length; i++) {
 					    var cat = categories[i];
 					    // Open div
-					    inventory.innerHTML += '<div>';
+					    newHTML += '<div>';
 					    
 					    // Create category header
-					    inventory.innerHTML += '<h2>'+cat.name+'</h2>';
+					    newHTML += '<h2>'+cat.name+'</h2><table><thead><tr><th>Item #</th><th>Description</th><th>Availability</th><th>Watched?</th><th>Notified?</th></tr></thead><tbody>';
 					    
 					    // Create item list
 					    var items = cat.items;
 					    for (var j = 0; j < items.length; j++) {
 					    	var item = items[j];
-					    	inventory.innerHTML += '<span id="inv-'+item.itemNumber+'">'+item.itemNumber+' '+item.name+' '+item.isInStock+' </span><br/>';
+					    	var stockText = (item.isInStock ? 'In Stock' : 'Out of Stock');
+					    	var tableRow = '<tr><td>'+item.itemNumber+'</td><td>'+item.name+'</td><td>'+stockText+'</td><td><span id="watched-'+item.itemNumber+'"></span></td><td><span id="notified-'+item.itemNumber+'"></span></td></tr>';
+					    	console.log(tableRow);
+					    	newHTML += tableRow;
 					    }
 					    
 					    // Close div
-					    inventory.innerHTML += '</div>';
+					    newHTML += '</tbody></table></div>';
+					    
+					    console.log(newHTML);
+					    inventory.innerHTML = newHTML;
+					    
+						// Wishlist needs to be processes after inventory is
+						req_wishlist.send();
 					}
-					
-					
-					// Wishlist needs to be processes after inventory is
-					req_wishlist.send();
 				} else {
 					// There was a problem with the request.
 					// For example, the response may have a 404 (Not Found)
