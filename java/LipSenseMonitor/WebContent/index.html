@@ -3,6 +3,21 @@
 <head>
 <script>
 
+function calculateMinutesFromMillis(milliseconds) {
+	var seconds = Math.floor(milliseconds / 1000);
+	var minutes = Math.floor(seconds / 60);
+	console.log('milliseconds='+milliseconds);
+	console.log('seconds='+seconds);
+	console.log('minutes='+minutes);
+	if (minutes < 1) {
+		return '<1 minute';
+	} else if (minutes == 1) {
+		return '1 minute';
+	} else {
+		return minutes+' minutes';
+	}
+}
+
 function processWatchedClick(clickedItem) {
 	var itemNumber = clickedItem.substring(8);
 	var distSelect = document.getElementById('distributorSelect');
@@ -171,7 +186,12 @@ function processNotifiedClick(clickedItem) {
 					
 					var inv = JSON.parse(req_inventory.responseText);
 					console.log(inv);
-					updatedTime.innerHTML = inv.epochAtLastUpdate;
+					console.log(inv.epochAtLastUpdate);
+					var milliseconds = (new Date).getTime();
+					console.log(milliseconds);
+					var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+					d.setUTCSeconds();
+					updatedTime.innerHTML = calculateMinutesFromMillis(milliseconds-inv.epochAtLastUpdate);
 					
 					var newHTML = '';
 					var categories = inv.categories;
@@ -219,14 +239,12 @@ function processNotifiedClick(clickedItem) {
 </head>
 <body>
 
-
 	<div id="distributorSelection">
-
 		Select the Distributor Wishlist: <select id="distributorSelect"></select>
 	</div>
 
 	<div id="updated">
-		Last updated at <span id="updatedTime"></span><br /> Updated every 30min.
+		Last updated <span id="updatedTime"></span> ago. (Updates every 30min).
 	</div>
 
 	<div id="inventory"></div>
