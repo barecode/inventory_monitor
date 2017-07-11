@@ -2,6 +2,95 @@
 <html>
 <head>
 <script>
+
+function processWatchedClick(clickedItem) {
+	var itemNumber = clickedItem.substring(8);
+	var distSelect = document.getElementById('distributorSelect');
+	var distID = distSelect.options[distSelect.selectedIndex].value;
+	var watched = document.getElementById(clickedItem);
+	
+	if (watched.innerHTML === '<b>watched</b>') {
+		watched.innerHTML = '<i>watch</i>';
+		var req_delete = new XMLHttpRequest();
+		req_delete.onreadystatechange = function() {
+			if (req_delete.readyState === XMLHttpRequest.DONE) {
+				// Everything is good, the response was received.
+				if (req_delete.status === 200) {
+					// Perfect!
+					console.log(req_delete);
+					console.log(req_delete.responseText);
+				} else {
+					// There was a problem with the request.
+					// For example, the response may have a 404 (Not Found)
+					// or 500 (Internal Server Error) response code.
+				}
+			} else {
+				// Not ready yet.
+			}
+			// Process the server response here.
+		};
+		req_delete.open('DELETE', '/LipSenseMonitor/rest/wishlists/'+distID+'/'+itemNumber);
+		req_delete.send();
+		
+	} else {
+		watched.innerHTML = '<b>watched</b>';
+		
+		var req_post = new XMLHttpRequest();
+		req_post.onreadystatechange = function() {
+			if (req_post.readyState === XMLHttpRequest.DONE) {
+				// Everything is good, the response was received.
+				if (req_post.status === 200) {
+					// Perfect!
+					console.log(req_post);
+					console.log(req_post.responseText);
+				} else {
+					// There was a problem with the request.
+					// For example, the response may have a 404 (Not Found)
+					// or 500 (Internal Server Error) response code.
+				}
+			} else {
+				// Not ready yet.
+			}
+			// Process the server response here.
+		};
+		req_post.open('POST', '/LipSenseMonitor/rest/wishlists/'+distID);
+		req_post.setRequestHeader('Content-Type', 'application/json');
+		req_post.send(itemNumber);
+	}
+}
+
+function processNotifiedClick(clickedItem) {
+	var itemNumber = clickedItem.substring(9);
+	var distSelect = document.getElementById('distributorSelect');
+	var distID = distSelect.options[distSelect.selectedIndex].value;
+	var notified = document.getElementById(clickedItem);
+	if (notified.innerHTML === '<b>notified</b>') {
+		// Clean isNotified
+		notified.innerHTML = '';
+		
+		var req_put = new XMLHttpRequest();
+		req_put.onreadystatechange = function() {
+			if (req_put.readyState === XMLHttpRequest.DONE) {
+				// Everything is good, the response was received.
+				if (req_put.status === 200) {
+					// Perfect!
+					console.log(req_put);
+					console.log(req_put.responseText);
+				} else {
+					// There was a problem with the request.
+					// For example, the response may have a 404 (Not Found)
+					// or 500 (Internal Server Error) response code.
+				}
+			} else {
+				// Not ready yet.
+			}
+			// Process the server response here.
+		};
+		req_put.open('PUT', '/LipSenseMonitor/rest/wishlists/'+distID+'/'+itemNumber);
+		req_put.send();
+	}
+}
+
 	window.onload = function updatePage() {
 		document.getElementById('updatedTime').innerHTML = "UPDATED";
 
@@ -54,8 +143,8 @@
 						console.log(item);
 						var watched = document.getElementById('watched-'+item.itemNumber);
 						var notified = document.getElementById('notified-'+item.itemNumber);
-						watched.innerHTML += (item.isWatched ? ' <b>watched</b> ' : ' <i>not watched</i> ');
-						notified.innerHTML += (item.isNotified ? ' <b>notified</b> ' : '');
+						watched.innerHTML = (item.isWatched ? '<b>watched</b>' : '<i>watch</i>');
+						notified.innerHTML = (item.isNotified ? '<b>notified</b>' : '');
 					}
 				} else {
 					// There was a problem with the request.
@@ -99,7 +188,7 @@
 					    for (var j = 0; j < items.length; j++) {
 					    	var item = items[j];
 					    	var stockText = (item.isInStock ? 'In Stock' : 'Out of Stock');
-					    	var tableRow = '<tr><td>'+item.itemNumber+'</td><td>'+item.name+'</td><td>'+stockText+'</td><td><span id="watched-'+item.itemNumber+'"></span></td><td><span id="notified-'+item.itemNumber+'"></span></td></tr>';
+					    	var tableRow = '<tr><td>'+item.itemNumber+'</td><td>'+item.name+'</td><td>'+stockText+'</td><td><span id="watched-'+item.itemNumber+'" onclick="processWatchedClick(\'watched-'+item.itemNumber+'\')"><i>watch<i></span></td><td><span id="notified-'+item.itemNumber+'" onclick="processNotifiedClick(\'notified-'+item.itemNumber+'\')"></span></td></tr>';
 					    	console.log(tableRow);
 					    	newHTML += tableRow;
 					    }

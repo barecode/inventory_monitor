@@ -18,9 +18,9 @@ import net.barecode.monitor.inventory.InventoryItem;
 @Path("inventory")
 public class InventoryAPI {
 
-	private Inventory inventory = new Inventory();
+	private static Inventory inventory = new Inventory();
 
-	public InventoryAPI() {
+	static {
 		// Populate fake inventory
 		InventoryCategory c1 = new InventoryCategory("INDIVIDUAL - LipSense® Liquid Lip Colors (0.25 oz)");
 		c1.addItem(new InventoryItem(1360, "Apple Cider LipSense", true));

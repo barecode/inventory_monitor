@@ -21,4 +21,9 @@ public class WishlistItem {
 		this.itemNumber = itemNumber;
 	}
 
+	public WishlistItem clearNotification() {
+		isNotified = false;
+		return this;
+	}
+
 }

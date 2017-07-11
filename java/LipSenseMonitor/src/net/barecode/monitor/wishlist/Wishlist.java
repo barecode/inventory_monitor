@@ -43,4 +43,17 @@ public class Wishlist {
 		return item;
 	}
 
+	public WishlistItem removeItem(int itemNumber) {
+		WishlistItem foundItem = null;
+		for (int i = 0; i < list.size(); i++) {
+			WishlistItem item = list.get(i);
+			if (item.itemNumber == itemNumber) {
+				foundItem = item;
+				list.remove(i);
+				break;
+			}
+		}
+		return foundItem;
+	}
+
 }

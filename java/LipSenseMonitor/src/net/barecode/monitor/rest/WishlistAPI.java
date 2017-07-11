@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -18,13 +20,15 @@ import net.barecode.monitor.wishlist.WishlistItem;
 @Path("wishlists")
 public class WishlistAPI {
 
-	private Map<String, Wishlist> wishlists = new HashMap<String, Wishlist>();
+	private static Map<String, Wishlist> wishlists = new HashMap<String, Wishlist>();
 
-	public WishlistAPI() {
+	static {
 		// Populate fake wishlist
 		Wishlist wl = new Wishlist("12345", "abc@123.com");
 		wl.list.add(new WishlistItem(1090));
-		wl.list.add(new WishlistItem(1510));
+		WishlistItem item = new WishlistItem(1510);
+		item.isNotified = true;
+		wl.list.add(item);
 		wishlists.put(wl.distributorID, wl);
 	}
 
@@ -63,4 +67,21 @@ public class WishlistAPI {
 			@PathParam("itemNumber") int itemNumber) {
 		return wishlists.get(distributorID).getItem(itemNumber);
 	}
+	
+	@PUT
+	@Path("{distributorID}/{itemNumber}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public WishlistItem clearNotificationItem(@PathParam("distributorID") String distributorID,
+			@PathParam("itemNumber") int itemNumber) {
+		return wishlists.get(distributorID).getItem(itemNumber).clearNotification();
+	}
+	
+	@DELETE
+	@Path("{distributorID}/{itemNumber}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public WishlistItem removeWishlistItem(@PathParam("distributorID") String distributorID,
+			@PathParam("itemNumber") int itemNumber) {
+		return wishlists.get(distributorID).removeItem(itemNumber);
+	}
+	
 }
