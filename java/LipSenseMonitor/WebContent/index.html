@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+<script>
+	window.onload = function updatePage() {
+		document.getElementById('updatedTime').innerHTML = "UPDATED";
+
+		var req_distributors = new XMLHttpRequest();
+		req_distributors.onreadystatechange = function() {
+			if (req_distributors.readyState === XMLHttpRequest.DONE) {
+				// Everything is good, the response was received.
+				if (req_distributors.status === 200) {
+					// Perfect!
+					console.log(req_distributors);
+					console.log(req_distributors.responseText);
+					var distSelect = document.getElementById('distributorSelect');
+					var distList = JSON.parse(req_distributors.responseText);
+					for (var i = 0; i < distList.length; i++) {
+					    var distID = distList[i];
+					    distSelect.innerHTML += '<option value="'+distID+'">'+distID+'</option>';
+					}
+				} else {
+					// There was a problem with the request.
+					// For example, the response may have a 404 (Not Found)
+					// or 500 (Internal Server Error) response code.
+				}
+			} else {
+				// Not ready yet.
+			}
+			// Process the server response here.
+		};
+		req_distributors.open('GET', '/LipSenseMonitor/rest/wishlists/distributors');
+		req_distributors.send();
+		
+		var req_wishlist = new XMLHttpRequest();
+		req_wishlist.onreadystatechange = function() {
+			if (req_wishlist.readyState === XMLHttpRequest.DONE) {
+				// Everything is good, the response was received.
+				if (req_wishlist.status === 200) {
+					// Perfect!
+					console.log(req_wishlist);
+					console.log(req_wishlist.responseText);
+					
+					var distSelect = document.getElementById('distributorSelect');
+					var distID = distSelect.options[distSelect.selectedIndex].value;
+					
+					console.log(distID);
+					var wishlist = JSON.parse(req_wishlist.responseText);
+					console.log(wishlist);
+					var list = wishlist[distID].list;
+					console.log(list);
+					for(var i = 0; i < list.length; i++) {
+						var item = list[i];
+						console.log(item);
+						var invRow = document.getElementById('inv-'+item.itemNumber);
+						console.log(invRow);
+						invRow.innerHTML += (item.isWatched ? ' <b>watched</b> ' : ' <i>not watched</i> ');
+						invRow.innerHTML += (item.isNotified ? ' <b>notified</b> ' : ' <i>not notified</i> ');
+					}
+				} else {
+					// There was a problem with the request.
+					// For example, the response may have a 404 (Not Found)
+					// or 500 (Internal Server Error) response code.
+				}
+			} else {
+				// Not ready yet.
+			}
+			// Process the server response here.
+		};
+		req_wishlist.open('GET', '/LipSenseMonitor/rest/wishlists');
+		
+		var req_inventory = new XMLHttpRequest();
+		req_inventory.onreadystatechange = function() {
+			if (req_inventory.readyState === XMLHttpRequest.DONE) {
+				// Everything is good, the response was received.
+				if (req_inventory.status === 200) {
+					// Perfect!
+					console.log(req_inventory);
+					console.log(req_inventory.responseText);
+					var updatedTime = document.getElementById('updatedTime');
+					var inventory = document.getElementById('inventory');
+					
+					var inv = JSON.parse(req_inventory.responseText);
+					console.log(inv);
+					updatedTime.innerHTML = inv.epochAtLastUpdate;
+					
+					var categories = inv.categories;
+					for (var i = 0; i < categories.length; i++) {
+					    var cat = categories[i];
+					    // Open div
+					    inventory.innerHTML += '<div>';
+					    
+					    // Create category header
+					    inventory.innerHTML += '<h2>'+cat.name+'</h2>';
+					    
+					    // Create item list
+					    var items = cat.items;
+					    for (var j = 0; j < items.length; j++) {
+					    	var item = items[j];
+					    	inventory.innerHTML += '<span id="inv-'+item.itemNumber+'">'+item.itemNumber+' '+item.name+' '+item.isInStock+' </span><br/>';
+					    }
+					    
+					    // Close div
+					    inventory.innerHTML += '</div>';
+					}
+					
+					
+					// Wishlist needs to be processes after inventory is
+					req_wishlist.send();
+				} else {
+					// There was a problem with the request.
+					// For example, the response may have a 404 (Not Found)
+					// or 500 (Internal Server Error) response code.
+				}
+			} else {
+				// Not ready yet.
+			}
+			// Process the server response here.
+		};
+		req_inventory.open('GET', '/LipSenseMonitor/rest/inventory');
+		req_inventory.send();
+	}
+</script>
+</head>
+<body>
+
+
+	<div id="distributorSelection">
+
+		Select the Distributor Wishlist: <select id="distributorSelect"></select>
+	</div>
+
+	<div id="updated">
+		Last updated at <span id="updatedTime"></span><br /> Updated every 30min.
+	</div>
+
+	<div id="inventory"></div>
+
+</body>
+</html>
