@@ -6,6 +6,12 @@ import net.barecode.monitor.inventory.InventoryItem;
 
 public class ParseInventory {
 
+	/**
+	 * Parse the HTML of the SenGense inventory and construct an Inventory object.
+	 * 
+	 * @param inventoryHTML
+	 * @return
+	 */
 	public Inventory parseInventory(String inventoryHTML) {
 		Inventory inventory = new Inventory();
 

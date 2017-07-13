@@ -11,6 +11,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
 import net.barecode.monitor.query.ParseInventory;
+import net.barecode.monitor.query.QueryLiveInventory;
 
 /**
  * Cronjob-like task to update the inventory.
@@ -21,7 +22,9 @@ import net.barecode.monitor.query.ParseInventory;
 @Startup
 public class InventoryHolder {
 	private static InventoryHolder holder = null;
-	private static Inventory inventory;
+	private static Inventory inventory = new Inventory();
+	private static final QueryLiveInventory query = new QueryLiveInventory();
+	private static final ParseInventory parser = new ParseInventory();
 
 	/**
 	 * Encourage singleton model.
@@ -31,7 +34,6 @@ public class InventoryHolder {
 	public static synchronized InventoryHolder getInstance() {
 		if (holder == null) {
 			holder = new InventoryHolder();
-			inventory = new Inventory();
 			doUpdateInventory();
 		}
 		return holder;
@@ -39,26 +41,35 @@ public class InventoryHolder {
 
 	private static void doUpdateInventory() {
 		synchronized (inventory) {
-			// Populate fake inventory
-			ParseInventory parser = new ParseInventory();
-			File f = new File("inventory.html");
-			System.out.println(f.getAbsolutePath());
-			StringBuilder sb = new StringBuilder();
-			BufferedReader buf = null;
+			String inventoryHTML = null;
 			try {
-				FileInputStream fis = new FileInputStream(f);
-				buf = new BufferedReader(new InputStreamReader(fis));
-				String line = buf.readLine();
-
-				while (line != null) {
-					sb.append(line).append("\n");
-					line = buf.readLine();
-				}
+				inventoryHTML = query.query();
 			} catch (Exception e) {
-				System.out.println(e);
+				System.out.println(e.getMessage());
 			}
-			String fileAsString = sb.toString();
-			inventory = parser.parseInventory(fileAsString);
+			if (inventoryHTML != null) {
+				inventory = parser.parseInventory(inventoryHTML);
+			} else {
+				// Populate fake inventory
+				File f = new File("inventory.html");
+				System.out.println(f.getAbsolutePath());
+				StringBuilder sb = new StringBuilder();
+				BufferedReader buf = null;
+				try {
+					FileInputStream fis = new FileInputStream(f);
+					buf = new BufferedReader(new InputStreamReader(fis));
+					String line = buf.readLine();
+
+					while (line != null) {
+						sb.append(line).append("\n");
+						line = buf.readLine();
+					}
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+				String fileAsString = sb.toString();
+				inventory = parser.parseInventory(fileAsString);
+			}
 		}
 	}
 
