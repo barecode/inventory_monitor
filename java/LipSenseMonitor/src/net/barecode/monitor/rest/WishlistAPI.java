@@ -14,6 +14,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import net.barecode.monitor.query.WishlistCompare;
 import net.barecode.monitor.wishlist.Wishlist;
 import net.barecode.monitor.wishlist.WishlistItem;
 
@@ -21,6 +22,7 @@ import net.barecode.monitor.wishlist.WishlistItem;
 public class WishlistAPI {
 
 	private static Map<String, Wishlist> wishlists = new HashMap<String, Wishlist>();
+	private static WishlistCompare compare = new WishlistCompare();
 
 	static {
 		// Populate fake wishlist
@@ -67,7 +69,7 @@ public class WishlistAPI {
 			@PathParam("itemNumber") int itemNumber) {
 		return wishlists.get(distributorID).getItem(itemNumber);
 	}
-	
+
 	@PUT
 	@Path("{distributorID}/{itemNumber}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -75,7 +77,7 @@ public class WishlistAPI {
 			@PathParam("itemNumber") int itemNumber) {
 		return wishlists.get(distributorID).getItem(itemNumber).clearNotification();
 	}
-	
+
 	@DELETE
 	@Path("{distributorID}/{itemNumber}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -83,5 +85,12 @@ public class WishlistAPI {
 			@PathParam("itemNumber") int itemNumber) {
 		return wishlists.get(distributorID).removeItem(itemNumber);
 	}
-	
+
+	@GET
+	@Path("notify")
+	@Produces(MediaType.APPLICATION_JSON)
+	public int notifyDistributors() {
+		return compare.compare(wishlists);
+	}
+
 }
