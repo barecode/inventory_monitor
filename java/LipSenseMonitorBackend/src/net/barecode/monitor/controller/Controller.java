@@ -1,9 +1,5 @@
 package net.barecode.monitor.controller;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.Date;
 
 import javax.ejb.Schedule;
@@ -13,7 +9,6 @@ import javax.ejb.Startup;
 import net.barecode.monitor.notify.SendEmail;
 import net.barecode.monitor.pojo.inventory.Inventory;
 import net.barecode.monitor.pojo.wishlist.Wishlist;
-import net.barecode.monitor.pojo.wishlist.WishlistItem;
 import net.barecode.monitor.pojo.wishlist.Wishlists;
 import net.barecode.monitor.query.ParseInventory;
 import net.barecode.monitor.query.QueryLiveInventory;
@@ -33,9 +28,24 @@ public class Controller {
 	 * @return Singleton instance of InventoryHolder
 	 */
 	public static synchronized Controller getInstance() {
+		return getInstance(true);
+	}
+
+	/**
+	 * Return the singleton instance. Optionally drive an update if needed on
+	 * creation.
+	 * 
+	 * @param shouldUpdate
+	 *            {@code true} if {@link #doUpdateInventory()} should be called
+	 *            if created, {@code false} otherwise
+	 * @return Singleton instance of InventoryHolder
+	 */
+	private static synchronized Controller getInstance(boolean shouldUpdate) {
 		if (holder == null) {
 			holder = new Controller();
-			holder.doUpdateInventory();
+			if (shouldUpdate) {
+				holder.doUpdateInventory();
+			}
 		}
 		return holder;
 	}
@@ -64,12 +74,9 @@ public class Controller {
 		query = new QueryLiveInventory(distributorID, distributorPassword);
 		parser = new ParseInventory();
 		compare = new WishlistCompare(new SendEmail(automationEmailID, automationEmailPassword));
-		
 
-		// Populate fake wishlist
-		Wishlist wl = new Wishlist("12345", notificationEmail);
-		wl.list.add(new WishlistItem(1090));
-		wl.list.add(new WishlistItem(1510));
+		// Populate initial wishlist with the primary distributorID
+		Wishlist wl = new Wishlist(distributorID, notificationEmail);
 		wishlists.put(wl.distributorID, wl);
 	}
 
@@ -94,60 +101,27 @@ public class Controller {
 	/**
 	 * cronjob-style invocation to update the singleton inventory.
 	 */
-	@Schedule(hour = "*", minute = "*", second = "*/5", persistent = false)
-	// @Schedule(hour = "*", minute = "0,30", second = "0", persistent = false)
+	@Schedule(hour = "*", minute = "0,30", second = "0", persistent = false)
 	public void updateInventory() {
-		System.out.println("Update requested at " + new Date());
-//		getInstance().doUpdateInventory();
+		getInstance().doUpdateInventory();
 	}
 
 	/**
 	 * Updates the inventory and drives compareAndNotify().
 	 */
 	private void doUpdateInventory() {
-		synchronized (inventory) {
-			boolean useFake = true;
-			if (useFake) {
-				doFakeUpdate();
-			} else {
-				String inventoryHTML = null;
-				try {
-					inventoryHTML = query.query();
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-				}
+		System.out.println("Update requested at " + new Date());
 
-				if (inventoryHTML != null) {
-					inventory = parser.parseInventory(inventoryHTML);
-				} else {
-					doFakeUpdate();
-				}
+		synchronized (this) {
+			try {
+				inventory = parser.parseInventory(query.query());
+			} catch (Exception e) {
+				System.out.println("Unable to query and parse live inventory");
+				e.printStackTrace();
 			}
-			
+
 			compareAndNotify();
 		}
-	}
-
-	private void doFakeUpdate() {
-		// Populate fake inventory
-		File f = new File("inventory.html");
-		System.out.println(f.getAbsolutePath());
-		StringBuilder sb = new StringBuilder();
-		BufferedReader buf = null;
-		try {
-			FileInputStream fis = new FileInputStream(f);
-			buf = new BufferedReader(new InputStreamReader(fis));
-			String line = buf.readLine();
-
-			while (line != null) {
-				sb.append(line).append("\n");
-				line = buf.readLine();
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		String fileAsString = sb.toString();
-		inventory = parser.parseInventory(fileAsString);
 	}
 
 	/**

@@ -62,20 +62,20 @@ public class ParseInventory {
 			return null;
 		}
 		String iNumStr = itemHTML.substring(iNumIdx+9, iNumIdx+9+4);
-		System.out.println(iNumStr);
+//		System.out.println(iNumStr);
 		int itemNumber = Integer.parseInt(iNumStr);
 
 		int nameIdx = itemHTML.indexOf("#0000FF'>");
 		int nameIdxEnd = itemHTML.indexOf('<', nameIdx);
 		String name = itemHTML.substring(nameIdx+9, nameIdxEnd);
-		System.out.println(name);
+//		System.out.println(name);
 		
 		int stockIdx = itemHTML.indexOf("color=\"Red\" size=\"2\">", nameIdxEnd);
 		int stockIdxEnd = itemHTML.indexOf('<', stockIdx);
 		String stockStr = itemHTML.substring(stockIdx+"color=\"Red\" size=\"2\">".length(), stockIdxEnd);
-		System.out.println(stockStr);
+//		System.out.println(stockStr);
 		boolean isInStock = stockStr.isEmpty();
-		// TODO Auto-generated method stub
+
 		return new InventoryItem(itemNumber, name, isInStock);
 	}
 }

@@ -73,12 +73,16 @@ public class QueryLiveInventory {
 		InputStream is = conn.getInputStream();
 		Scanner s = new Scanner(is).useDelimiter("\\A");
 		String result = s.hasNext() ? s.next() : "";
-		System.out.println("Content:");
-		System.out.println(result);
 		s.close();
 		is.close();
 
-		debugCookies();
+		if (result.contains("isDistributorPasswordCorrect===1")) {
+			System.out.println("Login attempt successful");
+		} else {
+			System.out.println("Login failed for " + distributorID);
+		}
+
+		// debugCookies();
 	}
 
 	/**
@@ -113,13 +117,12 @@ public class QueryLiveInventory {
 		InputStream is = conn.getInputStream();
 		Scanner s = new Scanner(is).useDelimiter("\\A");
 		String result = s.hasNext() ? s.next() : "";
-		System.out.println("Content:");
-		System.out.println(result);
 		s.close();
 		is.close();
 
 		// DistributorIdMismatchError.aspx indicates bad login
 		if (result.contains("DistributorIdMismatchError.aspx")) {
+			System.out.println("Looks like the login has expired");
 			result = null;
 		}
 
