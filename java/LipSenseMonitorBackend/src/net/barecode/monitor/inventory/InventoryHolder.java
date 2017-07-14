@@ -41,36 +41,46 @@ public class InventoryHolder {
 
 	private static void doUpdateInventory() {
 		synchronized (inventory) {
-			String inventoryHTML = null;
-			try {
-				inventoryHTML = query.query();
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
-			}
-			if (inventoryHTML != null) {
-				inventory = parser.parseInventory(inventoryHTML);
+			boolean useFake = true;
+			if (useFake) {
+				doFakeUpdate();
 			} else {
-				// Populate fake inventory
-				File f = new File("inventory.html");
-				System.out.println(f.getAbsolutePath());
-				StringBuilder sb = new StringBuilder();
-				BufferedReader buf = null;
+				String inventoryHTML = null;
 				try {
-					FileInputStream fis = new FileInputStream(f);
-					buf = new BufferedReader(new InputStreamReader(fis));
-					String line = buf.readLine();
-
-					while (line != null) {
-						sb.append(line).append("\n");
-						line = buf.readLine();
-					}
+					inventoryHTML = query.query();
 				} catch (Exception e) {
-					System.out.println(e);
+					System.out.println(e.getMessage());
 				}
-				String fileAsString = sb.toString();
-				inventory = parser.parseInventory(fileAsString);
+
+				if (inventoryHTML != null) {
+					inventory = parser.parseInventory(inventoryHTML);
+				} else {
+					doFakeUpdate();
+				}
 			}
 		}
+	}
+
+	private static void doFakeUpdate() {
+		// Populate fake inventory
+		File f = new File("inventory.html");
+		System.out.println(f.getAbsolutePath());
+		StringBuilder sb = new StringBuilder();
+		BufferedReader buf = null;
+		try {
+			FileInputStream fis = new FileInputStream(f);
+			buf = new BufferedReader(new InputStreamReader(fis));
+			String line = buf.readLine();
+
+			while (line != null) {
+				sb.append(line).append("\n");
+				line = buf.readLine();
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		String fileAsString = sb.toString();
+		inventory = parser.parseInventory(fileAsString);
 	}
 
 	/**

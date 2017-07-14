@@ -24,8 +24,8 @@ function processWatchedClick(clickedItem) {
 	var distID = distSelect.options[distSelect.selectedIndex].value;
 	var watched = document.getElementById(clickedItem);
 	
-	if (watched.innerHTML === '<b>watched</b>') {
-		watched.innerHTML = '<i>watch</i>';
+	if (watched.innerHTML === '<svg currentScale="1" width="30px" height="30px" viewBox="0 0 210 150"><use xlink:href="#open-eye"/></svg>') {
+		watched.innerHTML = '<svg currentScale="1" width="30px" height="30px" viewBox="0 -30 210 150"><use xlink:href="#closed-eye"/></svg>';
 		var req_delete = new XMLHttpRequest();
 		req_delete.onreadystatechange = function() {
 			if (req_delete.readyState === XMLHttpRequest.DONE) {
@@ -48,7 +48,7 @@ function processWatchedClick(clickedItem) {
 		req_delete.send();
 		
 	} else {
-		watched.innerHTML = '<b>watched</b>';
+		watched.innerHTML = '<svg currentScale="1" width="30px" height="30px" viewBox="0 0 210 150"><use xlink:href="#open-eye"/></svg>';
 		
 		var req_post = new XMLHttpRequest();
 		req_post.onreadystatechange = function() {
@@ -158,7 +158,7 @@ function processNotifiedClick(clickedItem) {
 						console.log(item);
 						var watched = document.getElementById('watched-'+item.itemNumber);
 						var notified = document.getElementById('notified-'+item.itemNumber);
-						watched.innerHTML = (item.isWatched ? '<b>watched</b>' : '<i>watch</i>');
+						watched.innerHTML = (item.isWatched ? '<svg currentScale="1" width="30px" height="30px" viewBox="0 0 210 150"><use xlink:href="#open-eye"/></svg>' : '<svg currentScale="1" width="30px" height="30px" viewBox="0 -30 210 150"><use xlink:href="#closed-eye"/></svg>');
 						notified.innerHTML = (item.isNotified ? '<b>notified</b>' : '');
 					}
 				} else {
@@ -236,8 +236,73 @@ function processNotifiedClick(clickedItem) {
 		req_inventory.send();
 	}
 </script>
+<style>
+
+.eyeball {
+fill: #FFFFFF;
+fill-opacity: 0;
+stroke: #000000;
+stroke-width: 5px;
+}
+
+.eyelash {
+stroke: #000000;
+stroke-width: 8px;
+stroke-linecap: round;
+}
+
+.pupil {
+fill: #FFFFFF;
+fill-opacity: 0;
+stroke: #000000;
+stroke-width: 15px;
+}
+
+.waiting .pupil {
+fill: #FFFF00;
+fill-opacity: 0;
+stroke: #0000FF;
+stroke-width: 15px;
+}
+
+.pupil:hover {
+fill: #FF00FF;
+fill-opacity: 0;
+stroke: #00FF00;
+stroke-width: 15px;
+}
+
+.watcher {
+background: url(#open-eye);
+}
+</style>
 </head>
 <body>
+
+
+<svg display="none">
+<defs>
+<!-- Attempt at a closed eye -->
+<symbol id="closed-eye">
+    <ellipse class="eyeball" cx="105" cy="55" rx="100" ry="50"/>
+    <line class="eyelash" x1="45" y1="75" x2="25" y2="130"/>
+    <line class="eyelash" x1="75" y1="83" x2="65" y2="140"/>
+    <line class="eyelash" x1="105" y1="90" x2="105" y2="145"/>
+    <line class="eyelash" x1="135" y1="83" x2="145" y2="140"/>
+    <line class="eyelash" x1="165" y1="75" x2="185" y2="130"/>
+    </symbol>
+    <!-- Attempt at an open eye -->
+<symbol id="open-eye">
+    <ellipse class="eyeball" cx="105" cy="90" rx="100" ry="50" />
+    <circle class="pupil" cx="105" cy="90" r="20" />
+    <line class="eyelash" x1="35" y1="22" x2="45" y2="47"/>
+    <line class="eyelash" x1="65" y1="12" x2="75" y2="40"/>
+    <line class="eyelash" x1="105" y1="4" x2="105" y2="38"/>
+    <line class="eyelash" x1="145" y1="12" x2="135" y2="40"/>
+    <line class="eyelash" x1="185" y1="22" x2="165" y2="47"/>
+    </symbol>
+    </defs>
+</svg>
 
 	<div id="distributorSelection">
 		Select the Distributor Wishlist: <select id="distributorSelect"></select>
