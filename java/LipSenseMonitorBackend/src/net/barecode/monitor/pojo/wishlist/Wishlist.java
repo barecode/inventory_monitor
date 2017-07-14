@@ -1,4 +1,4 @@
-package net.barecode.monitor.wishlist;
+package net.barecode.monitor.pojo.wishlist;
 
 import java.util.ArrayList;
 import java.util.List;

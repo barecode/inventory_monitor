@@ -1,4 +1,4 @@
-package net.barecode.monitor.inventory;
+package net.barecode.monitor.controller;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,30 +10,46 @@ import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
+import net.barecode.monitor.pojo.inventory.Inventory;
+import net.barecode.monitor.pojo.wishlist.Wishlist;
+import net.barecode.monitor.pojo.wishlist.WishlistItem;
+import net.barecode.monitor.pojo.wishlist.Wishlists;
 import net.barecode.monitor.query.ParseInventory;
 import net.barecode.monitor.query.QueryLiveInventory;
+import net.barecode.monitor.query.WishlistCompare;
 
 /**
- * Cronjob-like task to update the inventory.
- * 
- * @author barecode
+ * The Controller 
  */
 @Singleton
 @Startup
-public class InventoryHolder {
-	private static InventoryHolder holder = null;
+public class Controller {
+	private static Controller holder = null;
 	private static Inventory inventory = new Inventory();
+	private static Wishlists wishlists = new Wishlists();
 	private static final QueryLiveInventory query = new QueryLiveInventory();
 	private static final ParseInventory parser = new ParseInventory();
+	private static final WishlistCompare compare = new WishlistCompare();
+	
+	/**
+	 * cronjob 
+	 * Update the singleton inventory.
+	 */
+	@Schedule(hour = "*", minute = "*", second = "*/5", persistent = false)
+	//@Schedule(hour = "*", minute = "0,30", second = "0", persistent = false)
+	public void updateInventory() {
+		System.out.println("Update requested at " + new Date());
+//		doUpdateInventory();
+	}
 
 	/**
 	 * Encourage singleton model.
 	 * 
 	 * @return Singleton instance of InventoryHolder
 	 */
-	public static synchronized InventoryHolder getInstance() {
+	public static synchronized Controller getInstance() {
 		if (holder == null) {
-			holder = new InventoryHolder();
+			holder = new Controller();
 			doUpdateInventory();
 		}
 		return holder;
@@ -58,9 +74,17 @@ public class InventoryHolder {
 					doFakeUpdate();
 				}
 			}
+			
+			// Populate fake wishlist
+			Wishlist wl = new Wishlist("12345", "abc@123.com");
+			wl.list.add(new WishlistItem(1090));
+			WishlistItem item = new WishlistItem(1510);
+			item.isNotified = true;
+			wl.list.add(item);
+			wishlists.put(wl.distributorID, wl);
 		}
 	}
-
+	
 	private static void doFakeUpdate() {
 		// Populate fake inventory
 		File f = new File("inventory.html");
@@ -84,15 +108,6 @@ public class InventoryHolder {
 	}
 
 	/**
-	 * Update the singleton inventory.
-	 */
-	@Schedule(hour = "*", minute = "0,30", second = "0", persistent = false)
-	public void updateInventory() {
-		System.out.println("Update requested at " + new Date());
-		doUpdateInventory();
-	}
-
-	/**
 	 * Return the Inventory.
 	 * 
 	 * @return
@@ -101,4 +116,12 @@ public class InventoryHolder {
 		return inventory;
 	}
 
+	public Wishlists getWishlists() {
+		return wishlists;
+	}
+	
+	public int compareAndNotify() {
+		return compare.compare(inventory, wishlists);
+	}
+	
 }

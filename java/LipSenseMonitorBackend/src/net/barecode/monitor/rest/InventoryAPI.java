@@ -6,12 +6,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import net.barecode.monitor.inventory.Inventory;
-import net.barecode.monitor.inventory.InventoryHolder;
+import net.barecode.monitor.controller.Controller;
+import net.barecode.monitor.pojo.inventory.Inventory;
 
 /**
- * Read-only API to display the inventory of SeneGense at the time of the last
- * update.
+ * API to display the inventory of SeneGense at the time of the last update.
+ * An update can be requested via ?update=true query param.
  * 
  * @author barecode
  */
@@ -21,11 +21,11 @@ public class InventoryAPI {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Inventory getInventory(@QueryParam("update") boolean update) {
-		InventoryHolder inventoryHolder = InventoryHolder.getInstance();
+		Controller c = Controller.getInstance();
 		if (update) {
-			inventoryHolder.updateInventory();
+			c.updateInventory();
 		}
-		return inventoryHolder.getInventory();
+		return c.getInventory();
 	}
 
 }

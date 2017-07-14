@@ -1,4 +1,4 @@
-package net.barecode.monitor.inventory;
+package net.barecode.monitor.pojo.inventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,4 +29,5 @@ public class Inventory {
 	public void addCategory(InventoryCategory category) {
 		categories.add(category);
 	}
+
 }

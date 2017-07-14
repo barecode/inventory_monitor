@@ -1,4 +1,4 @@
-package net.barecode.monitor.wishlist;
+package net.barecode.monitor.pojo.wishlist;
 
 /**
  * Representation of a WishlistItem.
@@ -17,10 +17,19 @@ public class WishlistItem {
 	public boolean isWatched = true;
 	public boolean isNotified = false;
 
+	/**
+	 * 
+	 * @param itemNumber SeneGence item number
+	 */
 	public WishlistItem(int itemNumber) {
 		this.itemNumber = itemNumber;
 	}
 
+	/**
+	 * Clear the notification flag.
+	 * 
+	 * @return This WishlistItem instance
+	 */
 	public WishlistItem clearNotification() {
 		isNotified = false;
 		return this;

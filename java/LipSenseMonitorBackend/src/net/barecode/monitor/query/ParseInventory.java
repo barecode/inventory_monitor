@@ -1,8 +1,8 @@
 package net.barecode.monitor.query;
 
-import net.barecode.monitor.inventory.Inventory;
-import net.barecode.monitor.inventory.InventoryCategory;
-import net.barecode.monitor.inventory.InventoryItem;
+import net.barecode.monitor.pojo.inventory.Inventory;
+import net.barecode.monitor.pojo.inventory.InventoryCategory;
+import net.barecode.monitor.pojo.inventory.InventoryItem;
 
 public class ParseInventory {
 

@@ -1,9 +1,9 @@
-package net.barecode.monitor.inventory;
+package net.barecode.monitor.pojo.inventory;
 
 /**
  * A shallow representation of the an inventory item. Only critical information
  * necessary to monitor inventory and compare to the
- * {@link net.barecode.monitor.wishlist.Wishlist} is kept.
+ * {@link net.barecode.monitor.pojo.wishlist.Wishlist} is kept.
  * <p>
  * An InventoryItem is a collection of:
  * <p>
@@ -25,4 +25,5 @@ public class InventoryItem {
 		this.name = name;
 		this.isInStock = isInStock;
 	}
+
 }

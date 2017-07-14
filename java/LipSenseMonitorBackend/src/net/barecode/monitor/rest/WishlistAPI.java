@@ -1,8 +1,6 @@
 package net.barecode.monitor.rest;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -14,44 +12,37 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import net.barecode.monitor.query.WishlistCompare;
-import net.barecode.monitor.wishlist.Wishlist;
-import net.barecode.monitor.wishlist.WishlistItem;
+import net.barecode.monitor.controller.Controller;
+import net.barecode.monitor.pojo.wishlist.Wishlist;
+import net.barecode.monitor.pojo.wishlist.WishlistItem;
+import net.barecode.monitor.pojo.wishlist.Wishlists;
 
+/**
+ * API to manage the multiple wishlists for distributors.
+
+ * @author barecode
+ */
 @Path("wishlists")
 public class WishlistAPI {
 
-	private static Map<String, Wishlist> wishlists = new HashMap<String, Wishlist>();
-	private static WishlistCompare compare = new WishlistCompare();
-
-	static {
-		// Populate fake wishlist
-		Wishlist wl = new Wishlist("12345", "abc@123.com");
-		wl.list.add(new WishlistItem(1090));
-		WishlistItem item = new WishlistItem(1510);
-		item.isNotified = true;
-		wl.list.add(item);
-		wishlists.put(wl.distributorID, wl);
-	}
-
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Map<String, Wishlist> getWishlists() {
-		return wishlists;
+	public Wishlists getWishlists() {
+		return Controller.getInstance().getWishlists();
 	}
 
 	@GET
 	@Path("distributors")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<String> getDistributors() {
-		return wishlists.keySet();
+		return Controller.getInstance().getWishlists().getDistributors();
 	}
 
 	@GET
 	@Path("{distributorID}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Wishlist getWishlist(@PathParam("distributorID") String distributorID) {
-		return wishlists.get(distributorID);
+		return Controller.getInstance().getWishlists().get(distributorID);
 	}
 
 	@POST
@@ -59,7 +50,7 @@ public class WishlistAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem addWishlistItem(@PathParam("distributorID") String distributorID, int itemNumber) {
-		return wishlists.get(distributorID).addItem(itemNumber);
+		return Controller.getInstance().getWishlists().get(distributorID).addItem(itemNumber);
 	}
 
 	@GET
@@ -67,7 +58,7 @@ public class WishlistAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem getItem(@PathParam("distributorID") String distributorID,
 			@PathParam("itemNumber") int itemNumber) {
-		return wishlists.get(distributorID).getItem(itemNumber);
+		return Controller.getInstance().getWishlists().get(distributorID).getItem(itemNumber);
 	}
 
 	@PUT
@@ -75,7 +66,7 @@ public class WishlistAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem clearNotificationItem(@PathParam("distributorID") String distributorID,
 			@PathParam("itemNumber") int itemNumber) {
-		return wishlists.get(distributorID).getItem(itemNumber).clearNotification();
+		return Controller.getInstance().getWishlists().get(distributorID).getItem(itemNumber).clearNotification();
 	}
 
 	@DELETE
@@ -83,14 +74,14 @@ public class WishlistAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem removeWishlistItem(@PathParam("distributorID") String distributorID,
 			@PathParam("itemNumber") int itemNumber) {
-		return wishlists.get(distributorID).removeItem(itemNumber);
+		return Controller.getInstance().getWishlists().get(distributorID).removeItem(itemNumber);
 	}
 
 	@GET
 	@Path("notify")
 	@Produces(MediaType.APPLICATION_JSON)
 	public int notifyDistributors() {
-		return compare.compare(wishlists);
+		return Controller.getInstance().compareAndNotify();
 	}
 
 }

@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-import net.barecode.monitor.wishlist.WishlistItem;
+import net.barecode.monitor.pojo.wishlist.WishlistItem;
 
 public class QueryLiveInventory {
 	private final String distributorID;
