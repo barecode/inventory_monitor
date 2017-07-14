@@ -44,7 +44,7 @@ function processWatchedClick(clickedItem) {
 			}
 			// Process the server response here.
 		};
-		req_delete.open('DELETE', '/LipSenseMonitor/rest/wishlists/'+distID+'/'+itemNumber);
+		req_delete.open('DELETE', '/rest/wishlists/'+distID+'/'+itemNumber);
 		req_delete.send();
 		
 	} else {
@@ -68,7 +68,7 @@ function processWatchedClick(clickedItem) {
 			}
 			// Process the server response here.
 		};
-		req_post.open('POST', '/LipSenseMonitor/rest/wishlists/'+distID);
+		req_post.open('POST', '/rest/wishlists/'+distID);
 		req_post.setRequestHeader('Content-Type', 'application/json');
 		req_post.send(itemNumber);
 	}
@@ -101,7 +101,7 @@ function processNotifiedClick(clickedItem) {
 			}
 			// Process the server response here.
 		};
-		req_put.open('PUT', '/LipSenseMonitor/rest/wishlists/'+distID+'/'+itemNumber);
+		req_put.open('PUT', '/rest/wishlists/'+distID+'/'+itemNumber);
 		req_put.send();
 	}
 }
@@ -133,7 +133,7 @@ function processNotifiedClick(clickedItem) {
 			}
 			// Process the server response here.
 		};
-		req_distributors.open('GET', '/LipSenseMonitor/rest/wishlists/distributors');
+		req_distributors.open('GET', '/rest/wishlists/distributors');
 		req_distributors.send();
 		
 		var req_wishlist = new XMLHttpRequest();
@@ -171,7 +171,7 @@ function processNotifiedClick(clickedItem) {
 			}
 			// Process the server response here.
 		};
-		req_wishlist.open('GET', '/LipSenseMonitor/rest/wishlists');
+		req_wishlist.open('GET', '/rest/wishlists');
 		
 		var req_inventory = new XMLHttpRequest();
 		req_inventory.onreadystatechange = function() {
@@ -232,7 +232,7 @@ function processNotifiedClick(clickedItem) {
 			}
 			// Process the server response here.
 		};
-		req_inventory.open('GET', '/LipSenseMonitor/rest/inventory');
+		req_inventory.open('GET', '/rest/inventory');
 		req_inventory.send();
 	}
 </script>
