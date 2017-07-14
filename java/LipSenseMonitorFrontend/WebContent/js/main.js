@@ -96,11 +96,9 @@ function overlayWishlist() {
 			var list = wishlist.list;
 			for (var i = 0; i < list.length; i++) {
 				var item = list[i];
-				setIsWatched(document.getElementById('watchedSpan-'
-						+ item.itemNumber));
+				setIsWatched(item.itemNumber);
 				if (item.isNotified) {
-					setNotified(document.getElementById('notifiedSpan-'
-							+ item.itemNumber))
+					setNotified(item.itemNumber);
 				}
 			}
 		}
@@ -198,49 +196,68 @@ function createAvailabilityCol(item) {
 }
 
 /**
- * Updates the element to have the isWatched class
+ * Constructs the watchedSpan ID for the item number.
  * 
- * @param ele
+ * @param itemNumber
+ * @returns
  */
-function setIsWatched(ele) {
+function getWatchedSpanID(itemNumber) {
+	return 'watchedSpan-' + itemNumber;
+}
+
+/**
+ * Returns the watchedSpan element for the item number.
+ * 
+ * @param itemNumer
+ * @returns
+ */
+function getWatchedSpanElement(itemNumer) {
+	return document.getElementById(getWatchedSpanID(itemNumer));
+}
+
+/**
+ * Updates the visual indication of itemNumber to be watched
+ * 
+ * @param itemNumber
+ */
+function setIsWatched(itemNumber) {
+	var ele = getWatchedSpanElement(itemNumber);
 	ele.classList.remove('notWatched');
 	ele.classList.add('isWatched');
 }
 
 /**
- * Updates the element to have the notWatched class
+ * Updates the visual indication of itemNumber to be unwatched
  * 
- * @param ele
+ * @param itemNumber
  */
-function setNotWatched(ele) {
+function setNotWatched(itemNumber) {
+	var ele = getWatchedSpanElement(itemNumber);
 	ele.classList.remove('isWatched');
 	ele.classList.add('notWatched');
 }
 
 /**
- * Determines if the id is considered to be watched (i.e. it has the isWatched
+ * Determines if the itemNumber is considered to be watched (i.e. it has the isWatched
  * class).
  * 
- * @param id
- *            watchedSpan- ID to check
+ * @param itemNumber
  */
-function isWatched(id) {
-	return document.getElementById(id).classList.contains('isWatched');
+function isWatched(itemNumber) {
+	return getWatchedSpanElement(itemNumber).classList.contains('isWatched');
 }
 
 /**
- * Toggles the given element (by ID) to between isWatched and notWatched
+ * Toggles the given itemNumber to between isWatched and notWatched
  * classes.
  * 
- * @param id
- *            watchedSpan- ID to toggle
+ * @param itemNumber
  */
-function toggleIsWatched(id) {
-	var ele = document.getElementById(id);
-	if (ele.classList.contains('isWatched')) {
-		setNotWatched(ele);
+function toggleIsWatched(itemNumber) {
+	if (isWatched(itemNumber)) {
+		setNotWatched(itemNumber);
 	} else {
-		setIsWatched(ele);
+		setIsWatched(itemNumber);
 	}
 }
 
@@ -248,7 +265,6 @@ function toggleIsWatched(id) {
  * Drive the REST API to unwatch the item.
  * 
  * @param itemNumber
- *            The item to unwatch
  */
 function unwatch(itemNumber) {
 	console.log("Unwatch " + itemNumber);
@@ -263,7 +279,6 @@ function unwatch(itemNumber) {
  * Drive the REST API to watch the item
  * 
  * @param itemNumber
- *            The item to watch
  */
 function watch(itemNumber) {
 	console.log("Watch " + itemNumber);
@@ -278,17 +293,16 @@ function watch(itemNumber) {
  * Processes a click on the watchedSpan to change the visual indicator as well
  * as the change (via a REST API call) stored watched status.
  * 
- * @param id
- *            The watchedSpan-itemNumber ID that was clicked
+ * @param itemNumber
  */
-function processWatchedClick(id) {
-	var itemNumber = id.substring('watchedSpan-'.length);
-	if (isWatched(id)) {
+function processWatchedClick(itemNumber) {
+	if (isWatched(itemNumber)) {
+		clearNotified(itemNumber);
 		unwatch(itemNumber);
 	} else {
 		watch(itemNumber);
 	}
-	toggleIsWatched(id);
+	toggleIsWatched(itemNumber);
 }
 
 /**
@@ -300,44 +314,61 @@ function processWatchedClick(id) {
 function createWatchedCol(item) {
 	var spanID = 'watchedSpan-' + item.itemNumber;
 	return '<td class="watched" align="center"><span id="' + spanID
-			+ '" class="notWatched" onclick="processWatchedClick(\'' + spanID
-			+ '\')" title="Click to toggle watch state"></span></td>';
+			+ '" class="notWatched" onclick="processWatchedClick('
+			+ item.itemNumber
+			+ ')" title="Click to toggle watch state"></span></td>';
+}
+
+/**
+ * Constructs the notifiedSpan ID for the item number.
+ * 
+ * @param itemNumber
+ * @returns
+ */
+function getNotifiedSpanID(itemNumber) {
+	return 'notifiedSpan-' + itemNumber;
+}
+
+/**
+ * Returns the notifiedSpan element for the item number.
+ * 
+ * @param itemNumer
+ * @returns
+ */
+function getNotifiedSpanElement(itemNumer) {
+	return document.getElementById(getNotifiedSpanID(itemNumer));
 }
 
 /**
  * Determines if the id is considered to be notified (i.e. it has the
  * wasNotified class).
  * 
- * @param id
- *            notifiedSpan- ID to check
+ * @param itemNumber
  */
-function isNotified(id) {
-	return document.getElementById(id).classList.contains('wasNotified');
+function isNotified(itemNumber) {
+	return getNotifiedSpanElement(itemNumber).classList.contains('wasNotified');
 }
 
 /**
  * Adds the wasNotified class to the element.
  * 
- * @param ele
+ * @param itemNumber
  */
-function setNotified(ele) {
-	ele.classList.add('wasNotified');
+function setNotified(itemNumber) {
+	getNotifiedSpanElement(itemNumber).classList.add('wasNotified');
 }
 
 /**
  * Clear the notifiedSpan element of the visual indicator, and drive the REST
  * API to clear the flag.
  * 
- * @param id
  * @param itemNumber
- * @returns
  */
-function clearNotified(id, itemNumber) {
-	document.getElementById(id).classList.remove('wasNotified');
+function clearNotified(itemNumber) {
+	getNotifiedSpanElement(itemNumber).classList.remove('wasNotified');
 
 	var xhr = new XMLHttpRequest();
-	xhr.open('PUT', '/rest/wishlists/' + activeDistributorID + '/'
-			+ itemNumber);
+	xhr.open('PUT', '/rest/wishlists/' + activeDistributorID + '/' + itemNumber);
 	xhr.send();
 }
 
@@ -345,13 +376,12 @@ function clearNotified(id, itemNumber) {
  * Processes a click on the notifiedSpan to change the visual indicator as well
  * as the change (via a REST API call) stored notified status.
  * 
- * @param id
- *            The notifiedSpan-itemNumber ID that was clicked
+ * @param itemNumber
+ *            The itemNumber that was clicked
  */
-function processNotifiedClick(id) {
-	var itemNumber = id.substring('notifiedSpan-'.length);
-	if (isNotified(id)) {
-		clearNotified(id, itemNumber);
+function processNotifiedClick(itemNumber) {
+	if (isNotified(itemNumber)) {
+		clearNotified(itemNumber);
 	}
 }
 
@@ -362,9 +392,9 @@ function processNotifiedClick(id) {
  * @returns
  */
 function createNotifiedCol(item) {
-	var spanID = 'notifiedSpan-' + item.itemNumber;
-	return '<td align="center"><span id="' + spanID + '" onclick="processNotifiedClick(\''
-			+ spanID + '\')" title="Click to be notified again"></span></td>';
+	return '<td align="center"><span id="' + getNotifiedSpanID(item.itemNumber)
+			+ '" onclick="processNotifiedClick(' + item.itemNumber
+			+ ')" title="Click to be notified again"></span></td>';
 }
 
 /**
