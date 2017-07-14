@@ -4,6 +4,11 @@ import net.barecode.monitor.pojo.inventory.Inventory;
 import net.barecode.monitor.pojo.inventory.InventoryCategory;
 import net.barecode.monitor.pojo.inventory.InventoryItem;
 
+/**
+ * Creates a new Inventory object from the parsed inventory HTML.
+ * 
+ * @author barecode
+ */
 public class ParseInventory {
 
 	/**

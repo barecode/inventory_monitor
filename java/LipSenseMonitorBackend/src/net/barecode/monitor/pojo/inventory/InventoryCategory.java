@@ -19,11 +19,21 @@ public class InventoryCategory {
 	public String name;
 	public List<InventoryItem> items;
 
+	/**
+	 * @param name
+	 *            The category name
+	 */
 	public InventoryCategory(String name) {
 		this.name = name;
 		items = new ArrayList<InventoryItem>();
 	}
 
+	/**
+	 * Adds an InventoryItem to the category collection.
+	 * 
+	 * @param inventoryItem
+	 *            The InventoryItem to add
+	 */
 	public void addItem(InventoryItem inventoryItem) {
 		items.add(inventoryItem);
 	}

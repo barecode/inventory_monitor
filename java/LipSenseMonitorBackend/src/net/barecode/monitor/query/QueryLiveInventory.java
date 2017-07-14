@@ -1,11 +1,6 @@
 package net.barecode.monitor.query;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -14,37 +9,46 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-import net.barecode.monitor.pojo.wishlist.WishlistItem;
-
+/**
+ * Query the live product inventory page and return the resulting HTML as a
+ * String.
+ * <p>
+ * Initial requests will perform a login, and cache the resulting auth tokens.
+ * If subsequent queries require re-authentication, one attempt (at most) will
+ * be done.
+ * 
+ * @author barecode
+ */
 public class QueryLiveInventory {
 	private final String distributorID;
 	private final String distributorPassword;
-	private final String automationEmailID;
-	private final String automationEmailPassword;
-	private final String notificationEmail;
+	private final CookieManager manager;
 
-	public QueryLiveInventory() {
-		distributorID = getenv("SENEGENCE_DIST_ID");
-		distributorPassword = getenv("SENEGENCE_DIST_PASS");
-		automationEmailID = getenv("AUTOMATION_EMAIL_ID");
-		automationEmailPassword = getenv("AUTOMATION_EMAIL_PASSWORD");
-		notificationEmail = getenv("NOTIFICATION_EMAIL");
+	/**
+	 * @param distributorID
+	 *            SeneGence distributor ID
+	 * @param distributorPassword
+	 *            SeneGence distributor password
+	 */
+	public QueryLiveInventory(String distributorID, String distributorPassword) {
+		this.distributorID = distributorID;
+		this.distributorPassword = distributorPassword;
+		this.manager = new CookieManager();
+		manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+		CookieHandler.setDefault(manager);
 	}
 
-	private String getenv(final String key) {
-		String value = System.getenv(key);
-		if (value == null) {
-			System.out.println("Required environment variable not set: " + key);
-			value = "NULL";
-		}
-		return value;
-	}
-
+	/**
+	 * Query the live product inventory page and return the resulting HTML as a
+	 * String.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	public String query() throws Exception {
 		String result = queryProductList();
 		if (result == null) {
@@ -55,10 +59,6 @@ public class QueryLiveInventory {
 	}
 
 	private void login() throws Exception {
-		CookieManager manager = new CookieManager();
-		manager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-		CookieHandler.setDefault(manager);
-
 		String rawData = "{Dist_ID:'" + distributorID + "',Dist_Pass:'" + distributorPassword + "'}";
 		URL loginURL = new URL("https://www.senegence.com/senegence/default.aspx/DistributorLogin");
 		HttpURLConnection conn = (HttpURLConnection) loginURL.openConnection();
@@ -78,6 +78,13 @@ public class QueryLiveInventory {
 		s.close();
 		is.close();
 
+		debugCookies();
+	}
+
+	/**
+	 * 
+	 */
+	private void debugCookies() {
 		System.out.println("Cookies:");
 		CookieStore cs = manager.getCookieStore();
 		List<HttpCookie> cookies = cs.getCookies();
@@ -100,7 +107,8 @@ public class QueryLiveInventory {
 	 * @throws Exception
 	 */
 	private String queryProductList() throws Exception {
-		URL inventoryURL = new URL("https://www.senegence.com/SeneGenceWeb/WebOrdering/ProductList.aspx?d=332764&c=1&ot=1");
+		URL inventoryURL = new URL(
+				"https://www.senegence.com/SeneGenceWeb/WebOrdering/ProductList.aspx?d=332764&c=1&ot=1");
 		HttpURLConnection conn = (HttpURLConnection) inventoryURL.openConnection();
 		InputStream is = conn.getInputStream();
 		Scanner s = new Scanner(is).useDelimiter("\\A");

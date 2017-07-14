@@ -26,6 +26,12 @@ public class Inventory {
 		this.categories = new ArrayList<InventoryCategory>();
 	}
 
+	/**
+	 * Adds an InventoryCategory to the inventory collection.
+	 * 
+	 * @param category
+	 *            The InventoryCategory to add
+	 */
 	public void addCategory(InventoryCategory category) {
 		categories.add(category);
 	}

@@ -66,7 +66,7 @@ public class WishlistAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem clearNotificationItem(@PathParam("distributorID") String distributorID,
 			@PathParam("itemNumber") int itemNumber) {
-		return Controller.getInstance().getWishlists().get(distributorID).getItem(itemNumber).clearNotification();
+		return Controller.getInstance().getWishlists().get(distributorID).getItem(itemNumber).clearNotified();
 	}
 
 	@DELETE

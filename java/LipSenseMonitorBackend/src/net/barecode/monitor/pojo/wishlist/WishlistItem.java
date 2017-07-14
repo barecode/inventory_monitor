@@ -1,12 +1,11 @@
 package net.barecode.monitor.pojo.wishlist;
 
 /**
- * Representation of a WishlistItem.
+ * Representation of a WishlistItem being watched.
  * <p>
  * Each item in the wishlist contains:
  * <ul>
  * <li>itemNumber - the product number of the item</li>
- * <li>isWatched - indicates if the item is being actively watched</li>
  * <li>isNotified - indicates if a notification was sent for the item</li>
  * </ul>
  * 
@@ -14,15 +13,24 @@ package net.barecode.monitor.pojo.wishlist;
  */
 public class WishlistItem {
 	public final int itemNumber;
-	public boolean isWatched = true;
 	public boolean isNotified = false;
 
 	/**
-	 * 
-	 * @param itemNumber SeneGence item number
+	 * @param itemNumber
+	 *            SeneGence item number
 	 */
 	public WishlistItem(int itemNumber) {
 		this.itemNumber = itemNumber;
+	}
+
+	/**
+	 * Set the notification flag.
+	 * 
+	 * @return This WishlistItem instance
+	 */
+	public WishlistItem setNotified() {
+		isNotified = false;
+		return this;
 	}
 
 	/**
@@ -30,7 +38,7 @@ public class WishlistItem {
 	 * 
 	 * @return This WishlistItem instance
 	 */
-	public WishlistItem clearNotification() {
+	public WishlistItem clearNotified() {
 		isNotified = false;
 		return this;
 	}

@@ -10,6 +10,7 @@ import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
+import net.barecode.monitor.notify.SendEmail;
 import net.barecode.monitor.pojo.inventory.Inventory;
 import net.barecode.monitor.pojo.wishlist.Wishlist;
 import net.barecode.monitor.pojo.wishlist.WishlistItem;
@@ -19,28 +20,12 @@ import net.barecode.monitor.query.QueryLiveInventory;
 import net.barecode.monitor.query.WishlistCompare;
 
 /**
- * The Controller 
+ * The Controller
  */
 @Singleton
 @Startup
 public class Controller {
 	private static Controller holder = null;
-	private static Inventory inventory = new Inventory();
-	private static Wishlists wishlists = new Wishlists();
-	private static final QueryLiveInventory query = new QueryLiveInventory();
-	private static final ParseInventory parser = new ParseInventory();
-	private static final WishlistCompare compare = new WishlistCompare();
-	
-	/**
-	 * cronjob 
-	 * Update the singleton inventory.
-	 */
-	@Schedule(hour = "*", minute = "*", second = "*/5", persistent = false)
-	//@Schedule(hour = "*", minute = "0,30", second = "0", persistent = false)
-	public void updateInventory() {
-		System.out.println("Update requested at " + new Date());
-//		doUpdateInventory();
-	}
 
 	/**
 	 * Encourage singleton model.
@@ -50,12 +35,76 @@ public class Controller {
 	public static synchronized Controller getInstance() {
 		if (holder == null) {
 			holder = new Controller();
-			doUpdateInventory();
+			holder.doUpdateInventory();
 		}
 		return holder;
 	}
 
-	private static void doUpdateInventory() {
+	private Inventory inventory;
+	private final Wishlists wishlists;
+	private final QueryLiveInventory query;
+	private final ParseInventory parser;
+	private final WishlistCompare compare;
+
+	private final String distributorID;
+	private final String distributorPassword;
+	private final String automationEmailID;
+	private final String automationEmailPassword;
+	private final String notificationEmail;
+
+	public Controller() {
+		distributorID = getenv("SENEGENCE_DIST_ID");
+		distributorPassword = getenv("SENEGENCE_DIST_PASS");
+		automationEmailID = getenv("AUTOMATION_EMAIL_ID");
+		automationEmailPassword = getenv("AUTOMATION_EMAIL_PASSWORD");
+		notificationEmail = getenv("NOTIFICATION_EMAIL");
+
+		inventory = new Inventory();
+		wishlists = new Wishlists();
+		query = new QueryLiveInventory(distributorID, distributorPassword);
+		parser = new ParseInventory();
+		compare = new WishlistCompare(new SendEmail(automationEmailID, automationEmailPassword));
+		
+
+		// Populate fake wishlist
+		Wishlist wl = new Wishlist("12345", notificationEmail);
+		wl.list.add(new WishlistItem(1090));
+		wl.list.add(new WishlistItem(1510));
+		wishlists.put(wl.distributorID, wl);
+	}
+
+	/**
+	 * Return the environment variable value for the given key.
+	 * <p>
+	 * If no value is defined, a message is printed. These values are requred.
+	 * 
+	 * @param key
+	 *            The environment variable name
+	 * @return The environment variable value
+	 */
+	private String getenv(final String key) {
+		String value = System.getenv(key);
+		if (value == null) {
+			System.out.println("Required environment variable not set: " + key);
+			value = "NULL";
+		}
+		return value;
+	}
+
+	/**
+	 * cronjob-style invocation to update the singleton inventory.
+	 */
+	@Schedule(hour = "*", minute = "*", second = "*/5", persistent = false)
+	// @Schedule(hour = "*", minute = "0,30", second = "0", persistent = false)
+	public void updateInventory() {
+		System.out.println("Update requested at " + new Date());
+//		getInstance().doUpdateInventory();
+	}
+
+	/**
+	 * Updates the inventory and drives compareAndNotify().
+	 */
+	private void doUpdateInventory() {
 		synchronized (inventory) {
 			boolean useFake = true;
 			if (useFake) {
@@ -75,17 +124,11 @@ public class Controller {
 				}
 			}
 			
-			// Populate fake wishlist
-			Wishlist wl = new Wishlist("12345", "abc@123.com");
-			wl.list.add(new WishlistItem(1090));
-			WishlistItem item = new WishlistItem(1510);
-			item.isNotified = true;
-			wl.list.add(item);
-			wishlists.put(wl.distributorID, wl);
+			compareAndNotify();
 		}
 	}
-	
-	private static void doFakeUpdate() {
+
+	private void doFakeUpdate() {
 		// Populate fake inventory
 		File f = new File("inventory.html");
 		System.out.println(f.getAbsolutePath());
@@ -116,12 +159,24 @@ public class Controller {
 		return inventory;
 	}
 
+	/**
+	 * Return the Wishlists.
+	 * 
+	 * @return
+	 */
 	public Wishlists getWishlists() {
 		return wishlists;
 	}
-	
+
+	/**
+	 * Drive the comparison logic.
+	 * <p>
+	 * This is done automatically from updateInventory().
+	 * 
+	 * @return The number of notifications attempted
+	 */
 	public int compareAndNotify() {
 		return compare.compare(inventory, wishlists);
 	}
-	
+
 }

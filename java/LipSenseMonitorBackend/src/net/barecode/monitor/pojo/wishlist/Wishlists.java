@@ -12,22 +12,43 @@ import java.util.Map;
 public class Wishlists {
 	public Map<String, Wishlist> wishlistsByDistributorID = new HashMap<String, Wishlist>();
 
-	public void addWishlist(String distributorID, Wishlist wishlist) {
-		wishlistsByDistributorID.put(distributorID, wishlist);
-	}
-
-	public Collection<Wishlist> lists() {
+	/**
+	 * Returns the list of Wishlist objects in this collection.
+	 * 
+	 * @return the list of Wishlist objects in this collection.
+	 */
+	public Collection<Wishlist> getLists() {
 		return wishlistsByDistributorID.values();
 	}
 
+	/**
+	 * Returns the collection of distributor IDs with existing watch lists.
+	 * 
+	 * @return the collection of distributor IDs with existing watch lists.
+	 */
 	public Collection<String> getDistributors() {
 		return wishlistsByDistributorID.keySet();
 	}
 
+	/**
+	 * Returns the Wishlist for the given distributor.
+	 * 
+	 * @param distributorID
+	 *            the distributor ID of the wishlist owner
+	 * @return the Wishlist owned by the distributor
+	 */
 	public Wishlist get(String distributorID) {
 		return wishlistsByDistributorID.get(distributorID);
 	}
-	
+
+	/**
+	 * Adds a Wishlist to this collection.
+	 * 
+	 * @param distributorID
+	 *            the distributor ID of the wishlist owner
+	 * @param wishlist
+	 *            The wishlist to add
+	 */
 	public void put(String distributorID, Wishlist list) {
 		wishlistsByDistributorID.put(distributorID, list);
 	}

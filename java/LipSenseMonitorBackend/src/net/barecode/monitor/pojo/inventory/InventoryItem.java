@@ -20,6 +20,11 @@ public class InventoryItem {
 	public String name;
 	public boolean isInStock;
 
+	/**
+	 * @param itemNumber SeneGence item number
+	 * @param name Item name
+	 * @param isInStock True if the item is in stock
+	 */
 	public InventoryItem(int itemNumber, String name, boolean isInStock) {
 		this.itemNumber = itemNumber;
 		this.name = name;
