@@ -28,3 +28,9 @@ It is recommended the run_monitor.sh is installed in your crontab. I have mine c
 `30 * * * * run_monitor.sh >> run.log`
 
 That's it! Sit back and relax and wait for the e-mail.
+
+
+## V2.0
+
+WLP Kernel: http://central.maven.org/maven2/com/ibm/websphere/appserver/runtime/wlp-kernel/17.0.0.2/wlp-kernel-17.0.0.2.zip
+

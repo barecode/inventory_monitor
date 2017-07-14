@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<style>
+.eyeball {
+	fill: #FFFFFF;
+	fill-opacity: 0;
+	stroke: #000000;
+	stroke-width: 5px;
+}
+
+.eyelash {
+	stroke: #000000;
+	stroke-width: 8px;
+	stroke-linecap: round;
+}
+
+.pupil {
+	fill: #FFFFFF;
+	fill-opacity: 0;
+	stroke: #000000;
+	stroke-width: 15px;
+}
+
+.waiting .pupil {
+	fill: #FFFF00;
+	fill-opacity: 0;
+	stroke: #0000FF;
+	stroke-width: 15px;
+}
+
+.pupil:hover {
+	fill: #FF00FF;
+	fill-opacity: 0;
+	stroke: #00FF00;
+	stroke-width: 15px;
+}
+
+.watcher {
+	background: url(#open-eye);
+}
+</style>
+</head>
+<body>
+
+
+	<svg display="none">
+<defs>
+<!-- Attempt at a closed eye -->
+<symbol id="closed-eye">
+    <ellipse class="eyeball" cx="105" cy="55" rx="100" ry="50" />
+    <line class="eyelash" x1="45" y1="75" x2="25" y2="130" />
+    <line class="eyelash" x1="75" y1="83" x2="65" y2="140" />
+    <line class="eyelash" x1="105" y1="90" x2="105" y2="145" />
+    <line class="eyelash" x1="135" y1="83" x2="145" y2="140" />
+    <line class="eyelash" x1="165" y1="75" x2="185" y2="130" />
+    </symbol>
+    <!-- Attempt at an open eye -->
+<symbol id="open-eye">
+    <ellipse class="eyeball" cx="105" cy="90" rx="100" ry="50" />
+    <circle class="pupil" cx="105" cy="90" r="20" />
+    <line class="eyelash" x1="35" y1="22" x2="45" y2="47" />
+    <line class="eyelash" x1="65" y1="12" x2="75" y2="40" />
+    <line class="eyelash" x1="105" y1="4" x2="105" y2="38" />
+    <line class="eyelash" x1="145" y1="12" x2="135" y2="40" />
+    <line class="eyelash" x1="185" y1="22" x2="165" y2="47" />
+    </symbol>
+    </defs>
+</svg>
+
+</body>
+</html>

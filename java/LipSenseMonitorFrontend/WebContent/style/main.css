@@ -1,0 +1,36 @@
+/**
+ * 
+ */
+.errorReport {
+	color: red;
+}
+
+.inStock {
+	color: green;
+}
+
+.outOfStock {
+	color: red;
+}
+
+.isWatched {
+	background-image: url('images/open-eye-25px-25px.png');
+	width: 25px;
+	height: 25px;
+	margin: 0;
+	padding: 0;
+	display: block;
+}
+
+.notWatched {
+	background-image: url('images/closed-eye-25px-25px.png');
+	width: 25px;
+	height: 25px;
+	margin: 0;
+	padding: 0;
+	display: block;
+}
+
+.wasNotified {
+	
+}
