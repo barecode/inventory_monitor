@@ -29,7 +29,7 @@ public class WishlistItem {
 	 * @return This WishlistItem instance
 	 */
 	public WishlistItem setNotified() {
-		isNotified = false;
+		isNotified = true;
 		return this;
 	}
 
