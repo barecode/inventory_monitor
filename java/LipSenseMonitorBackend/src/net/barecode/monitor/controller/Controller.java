@@ -91,7 +91,7 @@ public class Controller {
 	 */
 	private String getenv(final String key) {
 		String value = System.getenv(key);
-		if (value == null) {
+		if (value == null || value.isEmpty()) {
 			System.out.println("Required environment variable not set: " + key);
 			value = "NULL";
 		}
