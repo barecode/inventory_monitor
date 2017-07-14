@@ -32,5 +32,10 @@
 }
 
 .wasNotified {
-	
+	background-image: url('images/sentmail-25px-25px.png');
+	width: 25px;
+	height: 25px;
+	margin: 0;
+	padding: 0;
+	display: block;
 }

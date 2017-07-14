@@ -96,12 +96,12 @@ function overlayWishlist() {
 			var list = wishlist.list;
 			for (var i = 0; i < list.length; i++) {
 				var item = list[i];
-				var watched = document.getElementById('watchedSpan-'
-						+ item.itemNumber);
-				var notified = document.getElementById('notifiedSpan-'
-						+ item.itemNumber);
-				setEyeOpen(watched);
-				notified.innerHTML = (item.isNotified ? '<b>notified</b>' : '');
+				setIsWatched(document.getElementById('watchedSpan-'
+						+ item.itemNumber));
+				if (item.isNotified) {
+					setNotified(document.getElementById('notifiedSpan-'
+							+ item.itemNumber))
+				}
 			}
 		}
 	};
@@ -202,7 +202,7 @@ function createAvailabilityCol(item) {
  * 
  * @param ele
  */
-function setEyeOpen(ele) {
+function setIsWatched(ele) {
 	ele.classList.remove('notWatched');
 	ele.classList.add('isWatched');
 }
@@ -212,7 +212,7 @@ function setEyeOpen(ele) {
  * 
  * @param ele
  */
-function setEyeClosed(ele) {
+function setNotWatched(ele) {
 	ele.classList.remove('isWatched');
 	ele.classList.add('notWatched');
 }
@@ -235,12 +235,12 @@ function isWatched(id) {
  * @param id
  *            watchedSpan- ID to toggle
  */
-function toggleEye(id) {
+function toggleIsWatched(id) {
 	var ele = document.getElementById(id);
 	if (ele.classList.contains('isWatched')) {
-		setEyeClosed(ele);
+		setNotWatched(ele);
 	} else {
-		setEyeOpen(ele);
+		setIsWatched(ele);
 	}
 }
 
@@ -288,7 +288,7 @@ function processWatchedClick(id) {
 	} else {
 		watch(itemNumber);
 	}
-	toggleEye(id);
+	toggleIsWatched(id);
 }
 
 /**
@@ -299,7 +299,7 @@ function processWatchedClick(id) {
  */
 function createWatchedCol(item) {
 	var spanID = 'watchedSpan-' + item.itemNumber;
-	return '<td><span id="' + spanID
+	return '<td align="center"><span id="' + spanID
 			+ '" class="notWatched" onclick="processWatchedClick(\'' + spanID
 			+ '\')"></span></td>';
 }
@@ -316,6 +316,15 @@ function isNotified(id) {
 }
 
 /**
+ * Adds the wasNotified class to the element.
+ * 
+ * @param ele
+ */
+function setNotified(ele) {
+	ele.classList.add('wasNotified');
+}
+
+/**
  * Clear the notifiedSpan element of the visual indicator, and drive the REST
  * API to clear the flag.
  * 
@@ -327,9 +336,9 @@ function clearNotified(id, itemNumber) {
 	document.getElementById(id).classList.remove('wasNotified');
 
 	var xhr = new XMLHttpRequest();
-	req_put.open('PUT', '/rest/wishlists/' + activeDistributorID + '/'
+	xhr.open('PUT', '/rest/wishlists/' + activeDistributorID + '/'
 			+ itemNumber);
-	req_put.send();
+	xhr.send();
 }
 
 /**
@@ -354,7 +363,7 @@ function processNotifiedClick(id) {
  */
 function createNotifiedCol(item) {
 	var spanID = 'notifiedSpan-' + item.itemNumber;
-	return '<td><span id="' + spanID + '" onclick="processNotifiedClick(\''
+	return '<td align="center"><span id="' + spanID + '" onclick="processNotifiedClick(\''
 			+ spanID + '\')"></span></td>';
 }
 
