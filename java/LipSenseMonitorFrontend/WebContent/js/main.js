@@ -153,7 +153,7 @@ function populateDistributors() {
 function startCategory(name) {
 	return '<div><h2>'
 			+ name
-			+ '</h2><table><thead><tr><th>Item #</th><th>Description</th><th>Availability</th><th>Watched?</th><th>Notified?</th></tr></thead><tbody>';
+			+ '</h2><table><thead><tr><th class="itemNum">Item #</th><th align="left" class="description">Description</th><th>Availability</th><th class="watched">Watched?</th><th>Notified?</th></tr></thead><tbody>';
 }
 
 /**
@@ -172,17 +172,17 @@ function endCategory() {
  * @returns
  */
 function createNumberCol(item) {
-	return '<td>' + item.itemNumber + '</td>';
+	return '<td class="itemNum">' + item.itemNumber + '</td>';
 }
 
 /**
- * Creates the HTML for the name column in the inventory table.
+ * Creates the HTML for the description column in the inventory table.
  * 
  * @param item
  * @returns
  */
-function createNameCol(item) {
-	return '<td>' + item.name + '</td>';
+function createDescriptionCol(item) {
+	return '<td align="left" class="description">' + item.name + '</td>';
 }
 
 /**
@@ -194,7 +194,7 @@ function createNameCol(item) {
 function createAvailabilityCol(item) {
 	var stockClass = (item.isInStock ? 'inStock' : 'outOfStock');
 	var stockText = (item.isInStock ? 'In Stock' : 'Out of Stock');
-	return '<td class="' + stockClass + '">' + stockText + '</td>';
+	return '<td class="stock ' + stockClass + '">' + stockText + '</td>';
 }
 
 /**
@@ -299,9 +299,9 @@ function processWatchedClick(id) {
  */
 function createWatchedCol(item) {
 	var spanID = 'watchedSpan-' + item.itemNumber;
-	return '<td align="center"><span id="' + spanID
+	return '<td class="watched" align="center"><span id="' + spanID
 			+ '" class="notWatched" onclick="processWatchedClick(\'' + spanID
-			+ '\')"></span></td>';
+			+ '\')" title="Click to toggle watch state"></span></td>';
 }
 
 /**
@@ -364,7 +364,7 @@ function processNotifiedClick(id) {
 function createNotifiedCol(item) {
 	var spanID = 'notifiedSpan-' + item.itemNumber;
 	return '<td align="center"><span id="' + spanID + '" onclick="processNotifiedClick(\''
-			+ spanID + '\')"></span></td>';
+			+ spanID + '\')" title="Click to be notified again"></span></td>';
 }
 
 /**
@@ -381,7 +381,7 @@ function addCategoryItems(items) {
 
 		var tableRow = '<tr>';
 		tableRow += createNumberCol(item);
-		tableRow += createNameCol(item);
+		tableRow += createDescriptionCol(item);
 		tableRow += createAvailabilityCol(item);
 		tableRow += createWatchedCol(item);
 		tableRow += createNotifiedCol(item);

@@ -5,15 +5,32 @@
 	color: red;
 }
 
-.inStock {
+th.itemNum {
+	
+}
+
+th.description, td.description {
+	padding-left: 10px;
+}
+
+td.stock {
+	
+}
+
+td.inStock {
 	color: green;
 }
 
-.outOfStock {
+td.outOfStock {
 	color: red;
 }
 
-.isWatched {
+th.watched {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+span.isWatched {
 	background-image: url('images/open-eye-25px-25px.png');
 	width: 25px;
 	height: 25px;
@@ -22,7 +39,7 @@
 	display: block;
 }
 
-.notWatched {
+span.notWatched {
 	background-image: url('images/closed-eye-25px-25px.png');
 	width: 25px;
 	height: 25px;
@@ -31,7 +48,7 @@
 	display: block;
 }
 
-.wasNotified {
+span.wasNotified {
 	background-image: url('images/sentmail-25px-25px.png');
 	width: 25px;
 	height: 25px;
