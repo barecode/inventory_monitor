@@ -103,7 +103,7 @@ public class Controller {
 	 */
 	@Schedule(hour = "*", minute = "0,30", second = "0", persistent = false)
 	public void updateInventory() {
-		getInstance().doUpdateInventory();
+		getInstance(false).doUpdateInventory();
 	}
 
 	/**
