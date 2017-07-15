@@ -43,7 +43,7 @@ public class WishlistCompare {
 		int notifications = 0;
 
 		for (Wishlist wishlist : wishlists.getLists()) {
-			for (WishlistItem watched : wishlist.list) {
+			for (WishlistItem watched : wishlist.readonlyList()) {
 				notifications += compareAndNotify(inv, wishlist, watched);
 			}
 		}

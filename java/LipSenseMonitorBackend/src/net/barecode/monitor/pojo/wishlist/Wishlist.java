@@ -1,6 +1,8 @@
 package net.barecode.monitor.pojo.wishlist;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -39,7 +41,7 @@ public class Wishlist {
 	 *            SeneGence item number
 	 * @return The WishlistItem for the given itemNumer, or null if not watched
 	 */
-	public WishlistItem getItem(int itemNumber) {
+	public synchronized WishlistItem getItem(int itemNumber) {
 		WishlistItem foundItem = null;
 		for (WishlistItem item : list) {
 			if (item.itemNumber == itemNumber) {
@@ -60,7 +62,7 @@ public class Wishlist {
 	 *            SeneGence item number to add
 	 * @return The added (or already existing) WishlistItem
 	 */
-	public WishlistItem addItem(int itemNumber) {
+	public synchronized WishlistItem addItem(int itemNumber) {
 		WishlistItem item = getItem(itemNumber);
 		if (item == null) {
 			item = new WishlistItem(itemNumber);
@@ -76,7 +78,7 @@ public class Wishlist {
 	 *            SeneGence item number
 	 * @return The removed WishlistItem, or null if not in the list.
 	 */
-	public WishlistItem removeItem(int itemNumber) {
+	public synchronized WishlistItem removeItem(int itemNumber) {
 		WishlistItem foundItem = null;
 		for (int i = 0; i < list.size(); i++) {
 			WishlistItem item = list.get(i);
@@ -87,6 +89,10 @@ public class Wishlist {
 			}
 		}
 		return foundItem;
+	}
+
+	public synchronized Collection<WishlistItem> readonlyList() {
+		return Collections.unmodifiableList(list);
 	}
 
 }

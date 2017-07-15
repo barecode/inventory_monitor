@@ -19,7 +19,7 @@ import net.barecode.monitor.pojo.wishlist.Wishlists;
 
 /**
  * API to manage the multiple wishlists for distributors.
-
+ * 
  * @author barecode
  */
 @Path("wishlists")
@@ -66,7 +66,15 @@ public class WishlistAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem clearNotificationItem(@PathParam("distributorID") String distributorID,
 			@PathParam("itemNumber") int itemNumber) {
-		return Controller.getInstance().getWishlists().get(distributorID).getItem(itemNumber).clearNotified();
+		WishlistItem item = null;
+		Wishlist wishlist = Controller.getInstance().getWishlists().get(distributorID);
+		if (wishlist != null) {
+			item = wishlist.getItem(itemNumber);
+			if (item != null) {
+				item.clearNotified();
+			}
+		}
+		return item;
 	}
 
 	@DELETE
