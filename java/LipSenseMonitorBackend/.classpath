@@ -15,5 +15,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/com.ibm.ws.st.core.runtimeClasspathProvider/WLP"/>
+	<classpathentry kind="lib" path="lib/mongo-java-driver-2.11.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
