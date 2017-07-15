@@ -1,5 +1,8 @@
 package net.barecode.monitor.query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.barecode.monitor.pojo.inventory.Inventory;
 import net.barecode.monitor.pojo.inventory.InventoryCategory;
 import net.barecode.monitor.pojo.inventory.InventoryItem;
@@ -12,7 +15,8 @@ import net.barecode.monitor.pojo.inventory.InventoryItem;
 public class ParseInventory {
 
 	/**
-	 * Parse the HTML of the SenGense inventory and construct an Inventory object.
+	 * Parse the HTML of the SenGense inventory and construct an Inventory
+	 * object.
 	 * 
 	 * @param inventoryHTML
 	 * @return
@@ -20,27 +24,48 @@ public class ParseInventory {
 	public Inventory parseInventory(String inventoryHTML) {
 		Inventory inventory = new Inventory();
 
-		parseCategory(inventoryHTML, inventory, "Liquid Lip Colors (0.25 oz)");
-		parseCategory(inventoryHTML, inventory, "Glosses (0.25 oz)");
+		List<String> categories = findCategories(inventoryHTML);
+		for (String category : categories) {
+			parseCategory(inventoryHTML, inventory, category);
+		}
 
 		return inventory;
 	}
 
 	/**
+	 * Find all of the categories within the inventoryHTML.
+	 * 
+	 * @param inventoryHTML
+	 * @return A list of category titles
+	 */
+	private List<String> findCategories(String inventoryHTML) {
+		List<String> categories = new ArrayList<String>();
+		int categoryLineIdx = inventoryHTML.indexOf("ProductCategoryDescription.aspx", 0);
+		while (categoryLineIdx > 0) {
+			int colorsIdx = inventoryHTML.indexOf("#000000", categoryLineIdx);
+			int startIdx = colorsIdx + 9;
+			int endIdx = inventoryHTML.indexOf('<', startIdx);
+			String category = inventoryHTML.substring(startIdx, endIdx);
+			categories.add(category);
+
+			categoryLineIdx = inventoryHTML.indexOf("ProductCategoryDescription.aspx", endIdx);
+		}
+
+		return categories;
+	}
+
+	/**
 	 * @param inventoryHTML
 	 * @param inventory
+	 * @param categoryToFind
 	 */
-	private void parseCategory(String inventoryHTML, Inventory inventory, String categoryToFind) {
-		int colorsIndex = inventoryHTML.indexOf(categoryToFind);
-		int contianingElementEnd = inventoryHTML.lastIndexOf('>', colorsIndex);
-		int nextElementStart = inventoryHTML.indexOf('<', colorsIndex);
-		String categoryName = inventoryHTML.substring(contianingElementEnd+1, nextElementStart);
+	private void parseCategory(String inventoryHTML, Inventory inventory, String categoryName) {
 		InventoryCategory category = new InventoryCategory(categoryName);
-		inventory.addCategory(category);
 
-		int nextCategoryIndex = inventoryHTML.indexOf("ProductCategoryDescription.aspx", colorsIndex);
+		int categoryIndex = inventoryHTML.indexOf(categoryName);
+		int nextCategoryIndex = inventoryHTML.indexOf("ProductCategoryDescription.aspx", categoryIndex);
 
-		int pos = colorsIndex;
+		int pos = categoryIndex;
 		int nextRowStart = inventoryHTML.indexOf("<tr>", pos);
 		int nextRowEnd = inventoryHTML.indexOf("</tr>", nextRowStart);
 		while (nextRowEnd < nextCategoryIndex) {
@@ -50,9 +75,14 @@ public class ParseInventory {
 				category.addItem(item);
 			}
 
-			pos = nextRowEnd+5;
+			pos = nextRowEnd + 5;
 			nextRowStart = inventoryHTML.indexOf("<tr>", pos);
 			nextRowEnd = inventoryHTML.indexOf("</tr>", nextRowStart);
+		}
+
+		// We only care about non-empty categories
+		if (!category.items.isEmpty()) {
+			inventory.addCategory(category);
 		}
 	}
 
@@ -61,21 +91,26 @@ public class ParseInventory {
 		if (iNumIdx < 1) {
 			return null;
 		}
-		String iNumStr = itemHTML.substring(iNumIdx+9, iNumIdx+9+4);
-//		System.out.println(iNumStr);
-		int itemNumber = Integer.parseInt(iNumStr);
+		try {
+			String iNumStr = itemHTML.substring(iNumIdx + 9, iNumIdx + 9 + 4);
+//			System.out.println(iNumStr);
+			int itemNumber = Integer.parseInt(iNumStr);
 
-		int nameIdx = itemHTML.indexOf("#0000FF'>");
-		int nameIdxEnd = itemHTML.indexOf('<', nameIdx);
-		String name = itemHTML.substring(nameIdx+9, nameIdxEnd);
-//		System.out.println(name);
-		
-		int stockIdx = itemHTML.indexOf("color=\"Red\" size=\"2\">", nameIdxEnd);
-		int stockIdxEnd = itemHTML.indexOf('<', stockIdx);
-		String stockStr = itemHTML.substring(stockIdx+"color=\"Red\" size=\"2\">".length(), stockIdxEnd);
-//		System.out.println(stockStr);
-		boolean isInStock = stockStr.isEmpty();
+			int nameIdx = itemHTML.indexOf("#0000FF'>");
+			int nameIdxEnd = itemHTML.indexOf('<', nameIdx);
+			String name = itemHTML.substring(nameIdx + 9, nameIdxEnd);
+//			System.out.println(name);
 
-		return new InventoryItem(itemNumber, name, isInStock);
+			int stockIdx = itemHTML.indexOf("color=\"Red\" size=\"2\">", nameIdxEnd);
+			int stockIdxEnd = itemHTML.indexOf('<', stockIdx);
+			String stockStr = itemHTML.substring(stockIdx + "color=\"Red\" size=\"2\">".length(), stockIdxEnd);
+//			System.out.println(stockStr);
+			boolean isInStock = stockStr.isEmpty();
+
+			return new InventoryItem(itemNumber, name, isInStock);
+		} catch (java.lang.NumberFormatException e) {
+			// There are some things with alphacharacters in the ID, ignore them
+			return null;
+		}
 	}
 }
