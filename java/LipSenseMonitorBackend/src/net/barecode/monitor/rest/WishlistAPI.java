@@ -50,7 +50,10 @@ public class WishlistAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem addWishlistItem(@PathParam("distributorID") String distributorID, int itemNumber) {
-		return Controller.getInstance().getWishlists().get(distributorID).addItem(itemNumber);
+		Controller controller = Controller.getInstance();
+		WishlistItem item = controller.getWishlists().get(distributorID).addItem(itemNumber);
+		controller.saveWishlists();
+		return item;
 	}
 
 	@GET
@@ -66,12 +69,14 @@ public class WishlistAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem clearNotificationItem(@PathParam("distributorID") String distributorID,
 			@PathParam("itemNumber") int itemNumber) {
+		Controller controller = Controller.getInstance();
 		WishlistItem item = null;
-		Wishlist wishlist = Controller.getInstance().getWishlists().get(distributorID);
+		Wishlist wishlist = controller.getWishlists().get(distributorID);
 		if (wishlist != null) {
 			item = wishlist.getItem(itemNumber);
 			if (item != null) {
 				item.clearNotified();
+				controller.saveWishlists();
 			}
 		}
 		return item;
@@ -82,7 +87,10 @@ public class WishlistAPI {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WishlistItem removeWishlistItem(@PathParam("distributorID") String distributorID,
 			@PathParam("itemNumber") int itemNumber) {
-		return Controller.getInstance().getWishlists().get(distributorID).removeItem(itemNumber);
+		Controller controller = Controller.getInstance();
+		WishlistItem item = controller.getWishlists().get(distributorID).removeItem(itemNumber);
+		controller.saveWishlists();
+		return item;
 	}
 
 	@GET

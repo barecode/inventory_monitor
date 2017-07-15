@@ -49,7 +49,7 @@ public class Wishlists {
 	 * @param wishlist
 	 *            The wishlist to add
 	 */
-	public void put(String distributorID, Wishlist list) {
-		wishlistsByDistributorID.put(distributorID, list);
+	public void put(String distributorID, Wishlist wishlist) {
+		wishlistsByDistributorID.put(distributorID, wishlist);
 	}
 }

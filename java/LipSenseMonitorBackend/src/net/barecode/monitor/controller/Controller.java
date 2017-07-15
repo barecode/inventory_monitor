@@ -8,6 +8,7 @@ import javax.ejb.Startup;
 
 import net.barecode.monitor.notify.SendEmail;
 import net.barecode.monitor.pojo.inventory.Inventory;
+import net.barecode.monitor.pojo.persistence.MongoPersistence;
 import net.barecode.monitor.pojo.wishlist.Wishlist;
 import net.barecode.monitor.pojo.wishlist.Wishlists;
 import net.barecode.monitor.query.ParseInventory;
@@ -55,6 +56,7 @@ public class Controller {
 	private final QueryLiveInventory query;
 	private final ParseInventory parser;
 	private final WishlistCompare compare;
+	private final MongoPersistence persistence;
 
 	private final String distributorID;
 	private final String distributorPassword;
@@ -70,14 +72,21 @@ public class Controller {
 		notificationEmail = getenv("NOTIFICATION_EMAIL");
 
 		inventory = new Inventory();
-		wishlists = new Wishlists();
 		query = new QueryLiveInventory(distributorID, distributorPassword);
 		parser = new ParseInventory();
 		compare = new WishlistCompare(new SendEmail(automationEmailID, automationEmailPassword));
+		persistence = new MongoPersistence();
 
-		// Populate initial wishlist with the primary distributorID
-		Wishlist wl = new Wishlist(distributorID, notificationEmail);
-		wishlists.put(wl.distributorID, wl);
+		Wishlists wishlists = persistence.load();
+		if (wishlists == null) {
+			// Populate initial wishlist with the primary distributorID
+			System.out.println("Initializing empty Wishlists");
+			wishlists = new Wishlists();
+			Wishlist wl = new Wishlist(distributorID, notificationEmail);
+			wishlists.put(wl.distributorID, wl);
+			persistence.store(wishlists);
+		}
+		this.wishlists = wishlists;
 	}
 
 	/**
@@ -140,6 +149,13 @@ public class Controller {
 	 */
 	public Wishlists getWishlists() {
 		return wishlists;
+	}
+
+	/**
+	 * Save the Wishlists to persisted storage.
+	 */
+	public void saveWishlists() {
+		persistence.store(wishlists);
 	}
 
 	/**

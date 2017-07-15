@@ -10,4 +10,10 @@
 		<servlet-name>javax.ws.rs.core.Application</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
+
+	<resource-env-ref>
+		<resource-env-ref-name>mongo/wishlist</resource-env-ref-name>
+		<resource-env-ref-type>com.mongodb.DB</resource-env-ref-type>
+	</resource-env-ref>
+
 </web-app>
