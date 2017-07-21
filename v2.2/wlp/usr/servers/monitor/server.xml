@@ -1,0 +1,26 @@
+<server description="monitor v2.1">
+
+    <!-- Enable features -->
+    <featureManager>
+        <feature>jaxrs-2.0</feature>
+        <feature>ejbLite-3.2</feature>
+        <feature>javaMail-1.5</feature>
+        <feature>mongodb-2.0</feature>
+        <feature>jndi-1.0</feature>
+    </featureManager>
+
+    <!-- To access this server from a remote client add a host attribute to the following element, e.g. host="*" -->
+    <httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="9080" httpsPort="9443" />
+
+    <library id="mongo-lib">
+        <file name="${shared.resource.dir}/mongo-java-driver-2.11.1.jar" />
+    </library>
+    <mongo id="mongo" libraryRef="mongo-lib" hostNames="192.168.1.111" ports="27017" />
+    <mongoDB jndiName="mongo/wishlist" mongoRef="mongo" databaseName="wishlists" />
+
+    <webApplication id="ui" location="LipSenseMonitorFrontend-2.1.war" contextRoot="/"/>
+    <webApplication id="rest" location="LipSenseMonitorBackend-2.1.war" contextRoot="/rest">
+        <classloader commonLibraryRef="mongo-lib" />
+    </webApplication>
+
+</server>
