@@ -10,6 +10,7 @@ PIDFile=/home/pi/wlp-output/.pid/monitor.pid
 ExecStart=/home/pi/wlp/bin/server start monitor
 ExecStop=/home/pi/wlp/bin/server stop monitor
 Restart=always
+TimeoutSec=5min
 
 [Install]
 WantedBy=multi-user.target
