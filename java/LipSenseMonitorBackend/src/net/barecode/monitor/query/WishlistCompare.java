@@ -1,5 +1,6 @@
 package net.barecode.monitor.query;
 
+import net.barecode.monitor.controller.Controller;
 import net.barecode.monitor.notify.Notifier;
 import net.barecode.monitor.pojo.inventory.Inventory;
 import net.barecode.monitor.pojo.inventory.InventoryCategory;
@@ -40,15 +41,34 @@ public class WishlistCompare {
 	 * @return The number of notifications sent
 	 */
 	public int compare(Inventory inv, Wishlists wishlists) {
-		int notifications = 0;
+		int notifications = companyAndNotify(inv, wishlists);
+		saveWishlistsIfNotificationsSent(notifications);
+		return notifications;
+	}
 
+	/**
+	 * @param inv
+	 * @param wishlists
+	 * @param notifications
+	 * @return
+	 */
+	private int companyAndNotify(Inventory inv, Wishlists wishlists) {
+		int notifications = 0;
 		for (Wishlist wishlist : wishlists.getLists()) {
 			for (WishlistItem watched : wishlist.readonlyList()) {
 				notifications += compareAndNotify(inv, wishlist, watched);
 			}
 		}
-
 		return notifications;
+	}
+
+	/**
+	 * @param notifications
+	 */
+	private void saveWishlistsIfNotificationsSent(int notifications) {
+		if (notifications > 0) {
+			Controller.getInstance().saveWishlists();
+		}
 	}
 
 	/**
