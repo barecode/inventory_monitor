@@ -1,0 +1,15 @@
+[Unit]
+Description=SeneGence inventory monitor
+Documentation=https://github.com/barecode/inventory_monitor
+Requires=mongodb.service
+
+[Service]
+Type=forking
+User=pi
+PIDFile=/home/pi/wlp-output/.pid/monitor.pid
+ExecStart=/home/pi/wlp/bin/server start monitor
+ExecStop=/home/pi/wlp/bin/server stop monitor
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
