@@ -44,6 +44,7 @@ public class Controller {
 	private static synchronized Controller getInstance(boolean shouldUpdate) {
 		if (holder == null) {
 			holder = new Controller();
+			holder.loadWishlistsFromPersistence();
 			if (shouldUpdate) {
 				holder.doUpdateInventory();
 			}
@@ -52,7 +53,7 @@ public class Controller {
 	}
 
 	private Inventory inventory;
-	private final Wishlists wishlists;
+	private Wishlists wishlists;
 	private final QueryLiveInventory query;
 	private final ParseInventory parser;
 	private final WishlistCompare compare;
@@ -72,21 +73,23 @@ public class Controller {
 		notificationEmail = getenv("NOTIFICATION_EMAIL");
 
 		inventory = new Inventory();
+		wishlists = initializeWithEmptyWishlists();
 		query = new QueryLiveInventory(distributorID, distributorPassword);
 		parser = new ParseInventory();
 		compare = new WishlistCompare(new SendEmail(automationEmailID, automationEmailPassword));
 		persistence = new MongoPersistence();
+	}
 
-		Wishlists wishlists = persistence.load();
-		if (wishlists == null) {
-			// Populate initial wishlist with the primary distributorID
-			System.out.println("Initializing empty Wishlists");
-			wishlists = new Wishlists();
-			Wishlist wl = new Wishlist(distributorID, notificationEmail);
-			wishlists.put(wl.distributorID, wl);
-			persistence.store(wishlists);
-		}
-		this.wishlists = wishlists;
+	/**
+	 * Populate initial wishlist with the primary distributorID
+	 * 
+	 * @return
+	 */
+	private Wishlists initializeWithEmptyWishlists() {
+		Wishlists wishlists = new Wishlists();
+		Wishlist wl = new Wishlist(distributorID, notificationEmail);
+		wishlists.put(wl.distributorID, wl);
+		return wishlists;
 	}
 
 	/**
@@ -151,11 +154,15 @@ public class Controller {
 		return wishlists;
 	}
 
-	/**
-	 * Save the Wishlists to persisted storage.
-	 */
 	public void saveWishlists() {
 		persistence.store(wishlists);
+	}
+
+	private void loadWishlistsFromPersistence() {
+		Wishlists wishlists = persistence.load();
+		if (wishlists != null) {
+			this.wishlists = wishlists;
+		}
 	}
 
 	/**
